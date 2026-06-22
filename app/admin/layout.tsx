@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 // ── Auth context ─────────────────────────────────────
 const AuthCtx = createContext<{ authed: boolean; logout: () => void }>({ authed: false, logout: () => {} });
@@ -18,15 +18,17 @@ const Icons = {
   logout: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   eye: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
   lock: <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+  cv: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
 };
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Overview", icon: Icons.grid },
-  { href: "/admin/projects", label: "Projects", icon: Icons.layers },
-  { href: "/admin/skills", label: "Skills", icon: Icons.zap },
-  { href: "/admin/experience", label: "Experience", icon: Icons.briefcase },
-  { href: "/admin/blog", label: "Blog Posts", icon: Icons.edit },
-  { href: "/admin/about", label: "About & Info", icon: Icons.user },
+  { href: "/admin",            label: "Overview",    icon: Icons.grid },
+  { href: "/admin/projects",   label: "Projects",    icon: Icons.layers },
+  { href: "/admin/skills",     label: "Skills",      icon: Icons.zap },
+  { href: "/admin/experience", label: "Experience",  icon: Icons.briefcase },
+  { href: "/admin/blog",       label: "Blog Posts",  icon: Icons.edit },
+  { href: "/admin/about",      label: "About & Info",icon: Icons.user },
+  { href: "/admin/cv",         label: "CV / Resume", icon: Icons.cv },
 ];
 
 // ── Login screen ─────────────────────────────────────
@@ -88,11 +90,18 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { logout } = useContext(AuthCtx);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div style={{ display:"flex", minHeight:"100vh", background:"var(--bg)" }}>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)}
+          style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:99, display:"none" }}
+          className="admin-overlay" />
+      )}
       {/* Sidebar */}
-      <aside style={{ width:220, borderRight:"1px solid var(--border2)", background:"var(--bg2)", display:"flex", flexDirection:"column", position:"fixed", top:0, bottom:0, left:0, zIndex:100 }}>
+      <aside className={`admin-sidebar${sidebarOpen ? " open" : ""}`} style={{ width:220, borderRight:"1px solid var(--border2)", background:"var(--bg2)", display:"flex", flexDirection:"column", position:"fixed", top:0, bottom:0, left:0, zIndex:100, transition:"transform .3s cubic-bezier(.16,1,.3,1)" }}>
         {/* Logo */}
         <div style={{ padding:"1.25rem 1rem 1rem", borderBottom:"1px solid var(--border2)" }}>
           <Link href="/admin" style={{ display:"flex", alignItems:"center", gap:".6rem", marginBottom:".25rem" }}>
@@ -134,9 +143,26 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main */}
-      <div style={{ marginLeft:220, flex:1, minWidth:0 }}>
+      <div className="admin-main" style={{ marginLeft:220, flex:1, minWidth:0 }}>
+        {/* Mobile header */}
+        <div className="admin-mobile-bar" style={{ display:"none", alignItems:"center", gap:"1rem", padding:"0.875rem 1rem", borderBottom:"1px solid var(--border2)", background:"var(--bg2)", position:"sticky", top:0, zIndex:50 }}>
+          <button onClick={() => setSidebarOpen(o => !o)}
+            style={{ background:"var(--surface)", border:"1px solid var(--border2)", borderRadius:6, padding:"0.4rem 0.6rem", display:"flex", flexDirection:"column", gap:3 }}>
+            {[0,1,2].map(i => <span key={i} style={{ display:"block", width:16, height:1.5, background:"var(--text2)", borderRadius:2 }} />)}
+          </button>
+          <span style={{ fontFamily:"'Oxanium',sans-serif", fontWeight:700, fontSize:"0.9rem" }}>Admin Panel</span>
+        </div>
         {children}
       </div>
+      <style>{`
+        @media(max-width:768px){
+          .admin-sidebar{transform:translateX(-100%);transition:transform .3s cubic-bezier(.16,1,.3,1);}
+          .admin-sidebar.open{transform:translateX(0)!important;}
+          .admin-overlay{display:block!important;}
+          .admin-main{margin-left:0!important;}
+          .admin-mobile-bar{display:flex!important;}
+        }
+      `}</style>
     </div>
   );
 }
@@ -148,8 +174,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const stored = sessionStorage.getItem("admin_auth");
-    if (stored === "1") setAuthed(true);
-    setChecked(true);
+    // Use queueMicrotask to avoid synchronous setState inside effect
+    queueMicrotask(() => {
+      if (stored === "1") setAuthed(true);
+      setChecked(true);
+    });
   }, []);
 
   const login = () => { sessionStorage.setItem("admin_auth","1"); setAuthed(true); };

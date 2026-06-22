@@ -1,1 +1,1 @@
-export { posts, getPublishedPosts as getAllPosts, getPostBySlug, type Post } from "./data";
+export { getPosts as posts, getPublishedPosts as getAllPosts, getPostBySlug, type Post } from "./store";

@@ -1,7 +1,6 @@
+"use client";
 import Link from "next/link";
-import { getPublishedPosts } from "@/lib/data";
-
-export const metadata = { title: "Blog — Nalin S Bandara" };
+import { getPublishedPosts } from "@/lib/store";
 
 export default function BlogPage() {
   const posts = getPublishedPosts();
@@ -24,7 +23,7 @@ export default function BlogPage() {
         </div>
 
         <div style={{ display:"flex", flexDirection:"column" }}>
-          {posts.map((post,i)=>(
+          {posts.map((post)=>(
             <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-list-row">
               <article style={{ display:"grid", gridTemplateColumns:"1fr auto", gap:"1.5rem", padding:"1.75rem 0", borderTop:"1px solid var(--border2)", alignItems:"center", transition:"padding-left .2s" }}>
                 <div>
@@ -46,7 +45,7 @@ export default function BlogPage() {
           <div style={{ borderTop:"1px solid var(--border2)" }} />
         </div>
       </section>
-      <style>{`.blog-list-row article:hover{padding-left:.75rem!important}.blog-list-row:hover .list-arrow{opacity:1!important}`}</style>
+      <style>{`.blog-list-row article{transition:transform .2s ease}.blog-list-row article:hover{transform:translateX(6px)}.blog-list-row:hover .list-arrow{opacity:1!important}`}</style>
     </div>
   );
 }

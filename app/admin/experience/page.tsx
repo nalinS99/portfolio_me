@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useLocalStorage } from "@/lib/hooks";
 import { experience as initialData, type Experience } from "@/lib/data";
 import { Modal, Field, TagInput, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
 const EMPTY: Experience = { id:"", role:"", company:"", location:"", startYear:"", endYear:"Present", description:"", tech:[] };
 
 export default function AdminExperience() {
-  const [items, setItems] = useState<Experience[]>(initialData);
+  const [items, setItems] = useLocalStorage<Experience[]>("admin_experience", initialData);
   const [form, setForm] = useState<Experience>(EMPTY);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
@@ -21,7 +22,7 @@ export default function AdminExperience() {
     else { setItems([form,...items]); show("Experience added!"); }
     setModalOpen(false);
   };
-  const set = (k: keyof Experience) => (v: any) => setForm(f=>({...f,[k]:v}));
+  const set = <K extends keyof Experience>(k: K) => (v: Experience[K]) => setForm(f=>({...f,[k]:v}));
 
   return (
     <div style={{ padding:"2.5rem", maxWidth:900 }}>
@@ -29,7 +30,7 @@ export default function AdminExperience() {
         action={<button className="btn btn-primary btn-sm" onClick={openNew}>+ Add Entry</button>} />
 
       <div style={{ display:"flex", flexDirection:"column", gap:"1px", background:"var(--border2)", borderRadius:12, overflow:"hidden" }}>
-        {items.map((exp,i)=>(
+        {items.map((exp)=>(
           <div key={exp.id} style={{ background:"var(--surface)", padding:"1.5rem", display:"grid", gridTemplateColumns:"160px 1fr auto", gap:"1.5rem", alignItems:"start" }}>
             <div>
               <div style={{ fontFamily:"'Fira Code',monospace", fontSize:".72rem", color:"var(--text3)" }}>{exp.startYear} — {exp.endYear}</div>

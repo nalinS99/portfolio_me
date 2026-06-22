@@ -1,7 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { experience, skills, aboutInfo } from "@/lib/data";
+import { getExperience, getSkills, getAboutInfo } from "@/lib/store";
+const experience = getExperience();
+const skills = getSkills();
+const aboutInfo = getAboutInfo();
 import { useTheme } from "@/components/ThemeProvider";
 
 /* ── Apple macOS-style window ───────────────────────── */
@@ -11,19 +14,7 @@ function MacWindow() {
   const [tab, setTab] = useState<"about"|"stack"|"stats"|"terminal">("about");
   const [time, setTime] = useState("");
   const [typed, setTyped] = useState("");
-  const [termLines, setTermLines] = useState<string[]>([]);
-  const terminalLines = [
-    "$ whoami",
-    "nalin",
-    "$ cat about.txt",
-    "Software Engineer @ Colombo, LK",
-    "5+ years · Full-Stack & Systems",
-    "$ uptime",
-    "up 5 years, crafting great software",
-    "$ echo $STATUS",
-    "✓ Available for work",
-    "$ █",
-  ];
+  const termLinesRef = React.useRef<string[]>([]);
 
   // Live clock
   useEffect(() => {
@@ -38,9 +29,15 @@ function MacWindow() {
 
   // Terminal typewriter on that tab
   useEffect(() => {
-    if (tab !== "terminal") { setTyped(""); setTermLines([]); return; }
+    if (tab !== "terminal") { setTimeout(() => { setTyped(""); }, 0); return; }
+    const terminalLines = [
+      "$ whoami", "nalin",
+      "$ cat role.txt", "Software Engineer",
+      "$ ls skills/", "TypeScript  Go  React  PostgreSQL  Docker",
+      "$ echo $STATUS", "Available for work ✓",
+    ];
+    termLinesRef.current = [];
     let lineIdx = 0, charIdx = 0;
-    let lines: string[] = [];
     let current = "";
     const tick = setInterval(() => {
       const line = terminalLines[lineIdx];
@@ -48,14 +45,13 @@ function MacWindow() {
       if (charIdx < line.length) {
         current += line[charIdx];
         charIdx++;
-        setTyped([...lines, current].join("\n"));
+        setTyped([...termLinesRef.current, current].join("\n"));
       } else {
-        lines = [...lines, current];
+        termLinesRef.current = [...termLinesRef.current, current];
         current = "";
         charIdx = 0;
         lineIdx++;
-        setTermLines(lines);
-        setTyped(lines.join("\n"));
+        setTyped(termLinesRef.current.join("\n"));
         if (lineIdx >= terminalLines.length) clearInterval(tick);
       }
     }, 38);
@@ -64,13 +60,13 @@ function MacWindow() {
 
   // Theme tokens
   const win   = isDark ? "#1a1d2e" : "#ffffff";
-  const bar   = isDark ? "#141624" : "#f0f0f0";
+  const _bar  = isDark ? "#141624" : "#f0f0f0"; void _bar;
   const brd   = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)";
   const txt   = isDark ? "#e2e8f0" : "#1e293b";
   const txt2  = isDark ? "#94a3b8" : "#64748b";
   const txt3  = isDark ? "#475569" : "#94a3b8";
   const surf  = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)";
-  const surf2 = isDark ? "rgba(99,102,241,0.12)" : "rgba(99,102,241,0.08)";
+  const _surf2 = isDark ? "rgba(99,102,241,0.12)" : "rgba(99,102,241,0.08)"; void _surf2;
   const mono  = "'Fira Code', monospace";
   const tabActive   = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)";
   const tabInactive = "transparent";
@@ -193,19 +189,19 @@ function MacWindow() {
                 { k:"available",  v:"true",                type:"bool" },
               ].map(({k,v,type}) => (
                 <div key={k} style={{ paddingLeft:"1.25rem", display:"flex", gap:".4rem", flexWrap:"wrap" }}>
-                  <span style={{ color: isDark ? "#34d399" : "#059669" }}>"{k}"</span>
+                  <span style={{ color: isDark ? "#34d399" : "#059669" }}>&quot;{k}&quot;</span>
                   <span style={{ color: txt3 }}>:</span>
                   <span style={{ color: type==="bool" ? (isDark?"#fb923c":"#d97706") : (isDark?"#c084fc":"#7c3aed") }}>{v}</span>
                   <span style={{ color: txt3 }}>,</span>
                 </div>
               ))}
               <div style={{ paddingLeft:"1.25rem", display:"flex", gap:".4rem", flexWrap:"wrap" }}>
-                <span style={{ color: isDark?"#34d399":"#059669" }}>"stack"</span>
+                <span style={{ color: isDark?"#34d399":"#059669" }}>&quot;stack&quot;</span>
                 <span style={{ color: txt3 }}>:</span>
                 <span style={{ color: isDark?"#c084fc":"#7c3aed" }}>[</span>
                 {["TypeScript","Go","PostgreSQL","React","Next.js"].map((s,i,arr)=>(
                   <span key={s}>
-                    <span style={{ color: isDark?"#60a5fa":"#2563eb" }}>"{s}"</span>
+                    <span style={{ color: isDark?"#60a5fa":"#2563eb" }}>&quot;{s}&quot;</span>
                     {i < arr.length-1 && <span style={{color:txt3}}>, </span>}
                   </span>
                 ))}
@@ -234,7 +230,7 @@ function MacWindow() {
                     <span style={{ color: txt3 }}>= [</span>
                     {row.items.map((item, i) => (
                       <span key={item}>
-                        <span style={{ color: row.color }}>"{item}"</span>
+                        <span style={{ color: row.color }}>&quot;{item}&quot;</span>
                         {i < row.items.length-1 && <span style={{color:txt3}}>, </span>}
                       </span>
                     ))}
@@ -286,7 +282,7 @@ function MacWindow() {
               minHeight:220,
               color: "#e2e8f0",
             }}>
-              {terminalLines.map((line, i) => (
+              {typed.split("\n").map((line, i) => (
                 <div key={i} style={{
                   color: line.startsWith("$") ? (isDark?"#60a5fa":"#7aa2f7")
                        : line.startsWith("✓") ? "#9ece6a"
@@ -297,12 +293,7 @@ function MacWindow() {
                   {line}
                 </div>
               ))}
-              {typed.split("\n").length > terminalLines.length && (
-                <div style={{ color: typed.split("\n").slice(-1)[0]?.startsWith("$") ? (isDark?"#60a5fa":"#7aa2f7") : "#a9b1d6", lineHeight:1.8 }}>
-                  {typed.split("\n").slice(terminalLines.length).join("")}
-                  <span style={{ animation:"blink-cursor 1s step-end infinite", borderRight:"1.5px solid #6366f1", marginLeft:1 }}>&nbsp;</span>
-                </div>
-              )}
+              <span style={{ animation:"blink-cursor 1s step-end infinite", borderRight:"1.5px solid #6366f1", marginLeft:1 }}>&nbsp;</span>
             </div>
           )}
         </div>
@@ -459,7 +450,7 @@ export default function About() {
       <section style={{ padding:"5rem 1.5rem", background:"var(--bg2)", borderTop:"1px solid var(--border2)", textAlign:"center" }}>
         <div style={{ maxWidth:520, margin:"0 auto" }}>
           <Reveal>
-            <h2 style={{ fontSize:"clamp(1.8rem,4vw,3rem)", fontWeight:800, marginBottom:"1rem" }}>Let's build something great</h2>
+            <h2 style={{ fontSize:"clamp(1.8rem,4vw,3rem)", fontWeight:800, marginBottom:"1rem" }}>Let&apos;s build something great</h2>
             <p style={{ color:"var(--text2)", marginBottom:"2rem", lineHeight:1.75 }}>Open to interesting projects, full-time roles, and collaborations.</p>
             <Link href="/#contact" className="btn btn-primary">Get in touch</Link>
           </Reveal>

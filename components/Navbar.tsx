@@ -17,6 +17,9 @@ const PAGE_LINKS = [
 function SunIcon() {
   return <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
 }
+function DownloadIcon() {
+  return <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+}
 function MoonIcon() {
   return <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
 }
@@ -28,13 +31,28 @@ export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
 
+  const downloadCV = () => {
+    if (typeof window === "undefined") return;
+    const data = localStorage.getItem("admin_cv_base64");
+    const name = localStorage.getItem("admin_cv_filename") || "CV-Nalin-Bandara.pdf";
+    if (!data) { alert("CV not available yet."); return; }
+    const bytes = atob(data);
+    const arr   = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+    const blob  = new Blob([arr], { type: "application/pdf" });
+    const url   = URL.createObjectURL(blob);
+    const a     = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => { queueMicrotask(() => setOpen(false)); }, [pathname]);
 
   const isPageActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -141,6 +159,18 @@ export default function Navbar() {
               <button className="theme-btn" onClick={toggle} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
                 {theme === "dark" ? <SunIcon /> : <MoonIcon />}
               </button>
+              <button onClick={downloadCV} title="Download CV" style={{
+                display: "flex", alignItems: "center", gap: "0.35rem",
+                padding: "0.45rem 0.9rem", borderRadius: 999,
+                fontSize: "0.82rem", fontWeight: 600,
+                background: "transparent",
+                color: "var(--text2)",
+                border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+                transition: "all 0.2s", whiteSpace: "nowrap", cursor: "pointer",
+              }}>
+                <DownloadIcon />
+                CV
+              </button>
               <Link href="/#contact" style={{
                 padding: "0.45rem 1.1rem", borderRadius: 999,
                 fontSize: "0.82rem", fontWeight: 600,
@@ -191,7 +221,15 @@ export default function Navbar() {
               <span style={{ fontSize: "0.68rem", color: "var(--indigo)", fontFamily: "'Fira Code',monospace" }}>page →</span>
             </Link>
           ))}
-          <div style={{ marginTop: "0.75rem" }}>
+          <div style={{ marginTop: "0.75rem", display:"flex", flexDirection:"column", gap:"0.5rem" }}>
+            <button onClick={downloadCV} style={{
+              display:"flex", alignItems:"center", justifyContent:"center", gap:"0.5rem",
+              padding:"0.65rem 1.25rem", borderRadius:999, width:"100%",
+              background:"transparent", border:"1px solid var(--border2)",
+              color:"var(--text2)", fontWeight:600, fontSize:"0.9rem", cursor:"pointer",
+            }}>
+              <DownloadIcon /> Download CV
+            </button>
             <Link href="/#contact" style={{
               display: "flex", justifyContent: "center",
               padding: "0.65rem 1.25rem", borderRadius: 999,

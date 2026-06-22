@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import { useLocalStorage } from "@/lib/hooks";
 import { posts as initialData, type Post } from "@/lib/data";
 import { Field, TagInput, Toggle, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
 const EMPTY: Post = { slug:"", title:"", excerpt:"", date:"", category:"", readTime:"", tags:[], published:false, content:"" };
 
 export default function AdminBlog() {
-  const [items, setItems] = useState<Post[]>(initialData);
+  const [items, setItems] = useLocalStorage<Post[]>("admin_posts", initialData);
   const [editing, setEditing] = useState<Post|null>(null);
   const [isNew, setIsNew] = useState(false);
   const [deleteSlug, setDeleteSlug] = useState<string|null>(null);
@@ -23,7 +24,7 @@ export default function AdminBlog() {
     else { setItems(items.map(i=>i.slug===editing.slug?editing:i)); show("Post saved!"); }
     setEditing(null);
   };
-  const set = (k: keyof Post) => (v: any) => setEditing(e=>e?{...e,[k]:v}:e);
+  const set = <K extends keyof Post>(k: K) => (v: Post[K]) => setEditing(e=>e?{...e,[k]:v}:e);
 
   if (editing) return (
     <div style={{ padding:"2rem", maxWidth:900 }}>

@@ -43,7 +43,7 @@ const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
 
 export default function FloatingIcons() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { queueMicrotask(() => setMounted(true)); }, []);
   if (!mounted) return null;
 
   return (

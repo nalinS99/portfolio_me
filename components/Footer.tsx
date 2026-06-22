@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
-import { aboutInfo } from "@/lib/data";
+import { getAboutInfo } from "@/lib/store";
+const aboutInfo = getAboutInfo();
 
 export default function Footer() {
   return (
@@ -73,6 +75,9 @@ export default function Footer() {
 
       <style>{`
         .footer-link:hover { color: var(--text) !important; padding-left: 0.25rem; }
+        @media(max-width: 768px) {
+          .container > div:first-child { grid-template-columns: 1fr 1fr !important; }
+        }
         @media(max-width: 640px) {
           .container > div:first-child { grid-template-columns: 1fr !important; }
         }

@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { projects, skills, experience, getPublishedPosts, aboutInfo } from "@/lib/data";
+import { getProjects, getSkills, getExperience, getPublishedPosts, getAboutInfo } from "@/lib/store";
 import DeviceMockup from "@/components/DeviceMockup";
 
 /* ── Typewriter ─────────────────────────────────────── */
@@ -17,10 +16,10 @@ function Typewriter({ words }: { words: string[] }) {
     const w = words[wi];
     if (!del) {
       if (ci < w.length) { const t = setTimeout(() => { setText(w.slice(0,ci+1)); setCi(c=>c+1); },55); return ()=>clearTimeout(t); }
-      setPause(true); setDel(true);
+      const t = setTimeout(() => { setPause(true); setDel(true); }, 0); return () => clearTimeout(t);
     } else {
       if (ci > 0) { const t = setTimeout(() => { setText(w.slice(0,ci-1)); setCi(c=>c-1); },28); return ()=>clearTimeout(t); }
-      setDel(false); setWi(i=>(i+1)%words.length);
+      const t = setTimeout(() => { setDel(false); setWi(i=>(i+1)%words.length); }, 0); return () => clearTimeout(t);
     }
   },[ci,del,wi,words,pause]);
   return (
@@ -186,7 +185,6 @@ function StatCounter({ num, suffix, label, color }: { num:number; suffix:string;
   }, []);
   useEffect(() => {
     if (!started) return;
-    let start = 0;
     const duration = 1400;
     const step = 16;
     const total = Math.ceil(duration / step);
@@ -244,7 +242,7 @@ function ContactForm() {
     <div className="card" style={{ padding:"2.5rem", textAlign:"center" }}>
       <div style={{ width:56,height:56,borderRadius:14,background:"rgba(16,185,129,.12)",border:"1px solid rgba(16,185,129,.25)",margin:"0 auto 1.25rem",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem" }}>✓</div>
       <h3 style={{ fontSize:"1.1rem",fontWeight:700,marginBottom:".5rem",color:"var(--text)" }}>Message sent!</h3>
-      <p style={{ fontSize:".875rem",color:"var(--text3)",marginBottom:"1.5rem",lineHeight:1.7 }}>Thanks {form.name.split(" ")[0]}! I'll get back to you within 24 hours.</p>
+      <p style={{ fontSize:".875rem",color:"var(--text3)",marginBottom:"1.5rem",lineHeight:1.7 }}>Thanks {form.name.split(" ")[0]}! I&apos;ll get back to you within 24 hours.</p>
       <button className="btn btn-outline btn-sm" onClick={()=>{setSent(false);setForm({name:"",email:"",subject:"",message:""});setErrors({})}}>Send another</button>
     </div>
   );
@@ -259,7 +257,7 @@ function ContactForm() {
                 {l}
                 {errors[k] && <span style={{ fontSize:".65rem",color:"rgba(239,68,68,0.9)",fontWeight:400 }}>{errors[k]}</span>}
               </label>
-              <input className="input" type={t} placeholder={p} value={(form as any)[k]}
+              <input className="input" type={t} placeholder={p} value={form[k as keyof typeof form]}
                 onChange={e=>{setForm({...form,[k]:e.target.value});if(errors[k])setErrors({...errors,[k]:""});}}
                 onFocus={()=>setFocus(k)} onBlur={()=>setFocus("")}
                 style={{borderColor:bdr(k),transition:"border-color .2s"}} />
@@ -318,6 +316,10 @@ function ContactForm() {
 
 /* ── Main page ──────────────────────────────────────── */
 export default function Home() {
+  const projects  = getProjects();
+  const skills    = getSkills();
+  const experience = getExperience();
+  const aboutInfo = getAboutInfo();
   const posts    = getPublishedPosts().slice(0,3);
   const featured = projects.filter(p=>p.featured);
 
@@ -327,7 +329,7 @@ export default function Home() {
       {/* ════ HERO ════ */}
       <section style={{ minHeight:"100vh", display:"flex", alignItems:"center", padding:"0", position:"relative", overflow:"hidden" }}>
         <div className="blob-hero" />
-        <div className="container" style={{ paddingTop:"5rem", paddingBottom:"4rem", position:"relative", zIndex:2, width:"100%" }}>
+        <div className="container" style={{ paddingTop:"7rem", paddingBottom:"4rem", position:"relative", zIndex:2, width:"100%" }}>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"3rem", alignItems:"center" }} className="hero-grid">
 
             {/* ── Left: text ── */}
@@ -447,7 +449,7 @@ export default function Home() {
           </div>
 
           <Reveal style={{ marginTop:"3rem", paddingTop:"2.5rem", borderTop:"1px solid var(--border2)" }} direction="up" delay={200}>
-            <p style={{ fontFamily:"'Fira Code',monospace", fontSize:".75rem", color:"var(--text3)", marginBottom:"1rem" }}>// also familiar with</p>
+            <p style={{ fontFamily:"'Fira Code',monospace", fontSize:".75rem", color:"var(--text3)", marginBottom:"1rem" }}>{"// also familiar with"}</p>
             <div style={{ display:"flex", flexWrap:"wrap", gap:".5rem" }}>
               {["Prisma","tRPC","Zod","Playwright","Jest","Tailwind CSS","Nginx","Cloudflare","Stripe","Socket.io","Elasticsearch","MongoDB"].map((t,i)=>(
                 <Reveal key={t} delay={i * 40} direction="scale">
@@ -471,7 +473,7 @@ export default function Home() {
       <section id="experience" style={{ padding:"6rem 0", background:"var(--bg2)", borderTop:"1px solid var(--border2)" }}>
         <div className="container">
           <SectionTitle label="History" title="Experience" />
-          <div style={{ position:"relative" }}>
+          <div style={{ position:"relative", paddingLeft:"1rem" }}>
             {/* Vertical timeline line */}
             <div style={{ position:"absolute", left:8, top:8, bottom:8, width:1, background:"linear-gradient(to bottom, var(--indigo), var(--cyan), transparent)", opacity:0.25 }} className="hide-sm" />
             <div style={{ display:"flex", flexDirection:"column" }}>

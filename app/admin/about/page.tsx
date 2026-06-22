@@ -1,15 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useLocalStorage } from "@/lib/hooks";
 import { aboutInfo as initialData, type AboutInfo } from "@/lib/data";
 import { Toggle, AdminPageHeader, useToast, Toast } from "@/components/AdminUI";
 
 export default function AdminAbout() {
-  const [info, setInfo] = useState<AboutInfo>(initialData);
-  const [saved, setSaved] = useState(false);
+  const [info, setInfo] = useLocalStorage<AboutInfo>("admin_about", initialData);
   const { toast, show } = useToast();
-  const set = (k: keyof AboutInfo) => (v: any) => setInfo(i=>({...i,[k]:v}));
+  const set = <K extends keyof AboutInfo>(k: K) => (v: AboutInfo[K]) => setInfo(i=>({...i,[k]:v}));
 
-  const save = () => { show("About info saved!"); setSaved(true); setTimeout(()=>setSaved(false), 3000); };
+  const save = () => { show("About info saved!"); };
 
   const updateBio = (idx: number, val: string) => {
     const b = [...info.bio]; b[idx]=val; setInfo({...info,bio:b});
@@ -28,7 +27,7 @@ export default function AdminAbout() {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div>
             <p style={{ fontWeight:600, fontSize:".95rem", marginBottom:".25rem" }}>Available for work</p>
-            <p style={{ fontSize:".82rem", color:"var(--text3)" }}>Shows the green "Available" badge on your site</p>
+            <p style={{ fontSize:".82rem", color:"var(--text3)" }}>Shows the green &quot;Available&quot; badge on your site</p>
           </div>
           <Toggle checked={info.available} onChange={set("available")} />
         </div>

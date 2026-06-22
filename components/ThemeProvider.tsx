@@ -11,8 +11,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem("theme") as Theme | null;
     const preferred = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
     const initial = saved || preferred;
-    setTheme(initial);
-    document.documentElement.setAttribute("data-theme", initial);
+    queueMicrotask(() => {
+      setTheme(initial);
+      document.documentElement.setAttribute("data-theme", initial);
+    });
   }, []);
 
   const toggle = () => {

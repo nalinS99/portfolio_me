@@ -1,16 +1,8 @@
-import { getPublishedPosts, getPostBySlug } from "@/lib/data";
+"use client";
+import { use } from "react";
+import { getPostBySlug } from "@/lib/store";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-
-export async function generateStaticParams() {
-  return getPublishedPosts().map(p => ({ slug: p.slug }));
-}
-
-export async function generateMetadata({ params }: { params: Promise<{slug:string}> }) {
-  const { slug } = await params;
-  const post = getPostBySlug(slug);
-  return { title: post ? `${post.title} — Nalin S Bandara` : "Not Found" };
-}
 
 function renderContent(content: string) {
   const lines = content.trim().split("\n");
@@ -45,8 +37,8 @@ function renderContent(content: string) {
   return els;
 }
 
-export default async function Post({ params }: { params: Promise<{slug:string}> }) {
-  const { slug } = await params;
+export default function Post({ params }: { params: Promise<{slug:string}> }) {
+  const { slug } = use(params);
   const post = getPostBySlug(slug);
   if (!post || !post.published) notFound();
 

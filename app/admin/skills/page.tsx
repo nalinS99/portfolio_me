@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useLocalStorage } from "@/lib/hooks";
 import { skills as initialData, type Skill } from "@/lib/data";
 import { Modal, Field, RangeInput, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
@@ -7,7 +8,7 @@ const CATS = ["Frontend","Backend","Infrastructure","Other"] as const;
 const EMPTY: Skill = { id:"", name:"", level:80, category:"Frontend" };
 
 export default function AdminSkills() {
-  const [items, setItems] = useState<Skill[]>(initialData);
+  const [items, setItems] = useLocalStorage<Skill[]>("admin_skills", initialData);
   const [form, setForm] = useState<Skill>(EMPTY);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
@@ -67,7 +68,7 @@ export default function AdminSkills() {
       <Modal open={modalOpen} title={editId?"Edit Skill":"Add Skill"} onClose={()=>setModalOpen(false)} width={480}>
         <Field label="Skill Name"><input className="input" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="e.g. React / Next.js" /></Field>
         <Field label="Category">
-          <select className="input" value={form.category} onChange={e=>setForm({...form,category:e.target.value as any})} style={{appearance:"auto"}}>
+          <select className="input" value={form.category} onChange={e=>setForm({...form,category:e.target.value as Skill["category"]})} style={{appearance:"auto"}}>
             {CATS.map(c=><option key={c} value={c}>{c}</option>)}
           </select>
         </Field>

@@ -1,6 +1,11 @@
 "use client";
 import Link from "next/link";
-import { projects, skills, experience, posts, aboutInfo } from "@/lib/data";
+import { getProjects, getSkills, getExperience, getPosts, getAboutInfo } from "@/lib/store";
+const projects = getProjects();
+const skills = getSkills();
+const experience = getExperience();
+const posts = getPosts();
+const aboutInfo = getAboutInfo();
 
 const SECTIONS = [
   { label:"Projects", count: projects.length, active: projects.filter(p=>p.status==="production").length, href:"/admin/projects", color:"var(--cyan)", desc:"Featured & all projects" },

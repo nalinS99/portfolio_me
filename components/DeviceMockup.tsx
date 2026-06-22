@@ -93,16 +93,16 @@ function MiniSitePreview({ isDark }: { isDark: boolean }) {
                 { k: "available",  v: "true",                   vc: isDark?"#fb923c":"#d97706" },
               ].map(({ k, v, vc }) => (
                 <div key={k} style={{ paddingLeft: 10, display: "flex", gap: 3 }}>
-                  <span style={{ color: isDark ? "#34d399" : "#059669" }}>"{k}"</span>
+                  <span style={{ color: isDark ? "#34d399" : "#059669" }}>&quot;{k}&quot;</span>
                   <span style={{ color: txt3 }}>:</span>
                   <span style={{ color: vc }}>{v}</span><span style={{ color: txt3 }}>,</span>
                 </div>
               ))}
               <div style={{ paddingLeft: 10, display: "flex", gap: 3, flexWrap: "wrap" }}>
-                <span style={{ color: isDark?"#34d399":"#059669" }}>"stack"</span>
+                <span style={{ color: isDark?"#34d399":"#059669" }}>&quot;stack&quot;</span>
                 <span style={{ color: txt3 }}>: [</span>
                 {["TS","Go","SQL","React"].map((s,i,a)=>(
-                  <span key={s} style={{ color: isDark?"#60a5fa":"#2563eb" }}>"{s}"{i<a.length-1?<span style={{color:txt3}}>,</span>:null}</span>
+                  <span key={s} style={{ color: isDark?"#60a5fa":"#2563eb" }}>&quot;{s}&quot;{i<a.length-1?<span style={{color:txt3}}>,</span>:null}</span>
                 ))}
                 <span style={{ color: txt3 }}>],</span>
               </div>
@@ -124,7 +124,7 @@ function MiniSitePreview({ isDark }: { isDark: boolean }) {
                   </div>
                   <div style={{ paddingLeft: 8, display: "flex", gap: 4, flexWrap: "wrap" }}>
                     {row.items.map(item => (
-                      <span key={item} style={{ color: row.color, background: `${row.color}18`, padding: "1px 5px", borderRadius: 3, fontSize: 7 }}>"{item}"</span>
+                      <span key={item} style={{ color: row.color, background: `${row.color}18`, padding: "1px 5px", borderRadius: 3, fontSize: 7 }}>&quot;{item}&quot;</span>
                     ))}
                   </div>
                   <div style={{ color: txt3 }}>]</div>
@@ -180,7 +180,6 @@ function MiniSitePreview({ isDark }: { isDark: boolean }) {
 
 /* ── Tablet preview ──────────────────────────────────── */
 function TabletPreview({ isDark }: { isDark: boolean }) {
-  const surf  = isDark ? "#111520" : "#ffffff";
   const surf2 = isDark ? "#181c2e" : "#f1f5f9";
   const brd   = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
   const txt   = isDark ? "#f1f5f9" : "#0f172a";
@@ -201,7 +200,7 @@ function TabletPreview({ isDark }: { isDark: boolean }) {
       <div style={{ padding: "12px 12px 8px", flex: 1 }}>
         <div style={{ fontSize: 6, color: indigo, marginBottom: 4, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Available for work</div>
         <div style={{ fontSize: 11, fontWeight: 800, lineHeight: 1.2, marginBottom: 6, color: txt, fontFamily: "'Oxanium', sans-serif" }}>
-          Hi, I'm<br />Nalin.
+          Hi, I&apos;m<br />Nalin.
         </div>
         <div style={{ fontSize: 7, color: txt2, lineHeight: 1.7, marginBottom: 10 }}>
           Software engineer from Colombo.<br />Full-stack & scalable systems.
@@ -265,7 +264,7 @@ function PhonePreview({ isDark }: { isDark: boolean }) {
 
         {/* Hero text */}
         <div style={{ fontSize: 14, fontWeight: 800, lineHeight: 1.15, color: txt, fontFamily: "'Oxanium', sans-serif", marginBottom: 6 }}>
-          Hi, I'm<br />
+          Hi, I&apos;m<br />
           <span style={{ background: `linear-gradient(135deg, ${indigo}, ${isDark?"#22d3ee":"#0891b2"})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
             Nalin.
           </span>
@@ -319,7 +318,6 @@ export default function DeviceMockup() {
   const isDark = theme === "dark";
 
   const laptopBg  = isDark ? "linear-gradient(135deg, #1e2133 0%, #141624 100%)" : "linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%)";
-  const laptopEdge = isDark ? "#2a2d42" : "#b0b4bd";
   const hingeClr  = isDark ? "#1a1d2e" : "#c4c7cf";
   const baseBg    = isDark ? "linear-gradient(135deg, #252839 0%, #1a1d2e 100%)" : "linear-gradient(135deg, #c4c7cf 0%, #a8acb5 100%)";
   const phoneBg   = isDark ? "linear-gradient(145deg, #1e2133, #141624)" : "linear-gradient(145deg, #e5e7eb, #d1d5db)";
