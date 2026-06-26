@@ -341,18 +341,18 @@ export default function Home() {
                 </span>
               </div>
 
-              <h1 className="fade-up d2" style={{ fontWeight:800, lineHeight:1.1, marginBottom:"1.25rem" }}>
+              <h1 className="2" style={{ fontWeight:800, lineHeight:1.1, marginBottom:"1.25rem" }}>
                 <span style={{ display:"block", fontSize:"clamp(1.6rem,3.2vw,2.6rem)", color:"var(--text2)", fontWeight:700, marginBottom:"0.3rem" }}>
                   Hi, I&apos;m Nalin —
                 </span>
                 <span style={{ display:"flex", alignItems:"baseline", gap:"0.35em", whiteSpace:"nowrap", fontSize:"clamp(2rem,4.2vw,3.5rem)" }}>
                   <span style={{ color:"var(--text3)", fontWeight:800 }}>I</span>
-                  <Typewriter words={["build web apps.", "architect systems.", "ship fast.", "love TypeScript."]} />
+                  <Typewriter words={["build web apps.", "code full-stack.", "solve puzzles..", "love TypeScript."]} />
                 </span>
               </h1>
 
               <p className="fade-up d3" style={{ fontSize:"1rem", color:"var(--text2)", maxWidth:440, lineHeight:1.8, marginBottom:"2.25rem" }}>
-                Software engineer from Colombo, Sri Lanka. I specialise in full-stack web development, performance, and scalable backend systems.
+                Software Engineer specializing in fast, scalable full-stack web development and complex data problem solving.
               </p>
 
               <div className="fade-up d4" style={{ display:"flex", gap:".75rem", flexWrap:"wrap", marginBottom:"2.75rem" }}>
@@ -362,9 +362,9 @@ export default function Home() {
 
               <div className="fade-up d5" style={{ display:"flex", gap:"0", paddingTop:"2rem", borderTop:"1px solid var(--border2)", flexWrap:"wrap" }}>
                 {[
-                  { num:5,  suffix:"+",  label:"Years experience",     color:"var(--indigo)" },
-                  { num:30, suffix:"+",  label:"Projects shipped",     color:"var(--cyan)" },
-                  { num:10, suffix:"M+", label:"Users served",         color:"var(--violet)" },
+                  { num:2,  suffix:"+",  label:"Years experience",     color:"var(--indigo)" },
+                  { num:6, suffix:"+",  label:"Projects completed",     color:"var(--cyan)" },
+                  { num:8, suffix:"+", label:"Tech stack tools",         color:"var(--violet)" },
                   { num:99, suffix:"%",  label:"Coffee-to-code ratio", color:"var(--green)" },
                 ].map((s,i)=>(
                   <Reveal key={s.label} delay={i*100} direction="up">
@@ -448,7 +448,7 @@ export default function Home() {
             ))}
           </div>
 
-          <Reveal style={{ marginTop:"3rem", paddingTop:"2.5rem", borderTop:"1px solid var(--border2)" }} direction="up" delay={200}>
+          {/* <Reveal style={{ marginTop:"3rem", paddingTop:"2.5rem", borderTop:"1px solid var(--border2)" }} direction="up" delay={200}>
             <p style={{ fontFamily:"'Fira Code',monospace", fontSize:".75rem", color:"var(--text3)", marginBottom:"1rem" }}>{"// also familiar with"}</p>
             <div style={{ display:"flex", flexWrap:"wrap", gap:".5rem" }}>
               {["Prisma","tRPC","Zod","Playwright","Jest","Tailwind CSS","Nginx","Cloudflare","Stripe","Socket.io","Elasticsearch","MongoDB"].map((t,i)=>(
@@ -457,7 +457,7 @@ export default function Home() {
                 </Reveal>
               ))}
             </div>
-          </Reveal>
+          </Reveal> */}
         </div>
       </section>
 

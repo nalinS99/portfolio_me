@@ -184,7 +184,7 @@ function MacWindow() {
                 { k:"name",       v:'"Nalin S Bandara"',   type:"str" },
                 { k:"role",       v:'"Software Engineer"', type:"str" },
                 { k:"location",   v:'"Colombo, LK 🇱🇰"',  type:"str" },
-                { k:"experience", v:'"5+ years"',          type:"str" },
+                { k:"experience", v:'"2+ years"',          type:"str" },
                 { k:"focus",      v:'"Full-Stack & Systems"', type:"str" },
                 { k:"available",  v:"true",                type:"bool" },
               ].map(({k,v,type}) => (
@@ -246,7 +246,7 @@ function MacWindow() {
             <div style={{ display:"flex", flexDirection:"column", gap:".6rem" }}>
               <div style={{ color: txt3, marginBottom:".25rem" }}>{"# system stats"}</div>
               {[
-                { label:"Experience",   value:"5+ years",    bar:0.85, color:"#6366f1" },
+                { label:"Experience",   value:"2+ years",    bar:0.85, color:"#6366f1" },
                 { label:"Projects",     value:"30+ shipped", bar:0.75, color:"#22d3ee" },
                 { label:"Users Served", value:"10M+",        bar:0.92, color:"#a78bfa" },
                 { label:"Uptime",       value:"99.9%",       bar:0.999,color:"#34d399" },

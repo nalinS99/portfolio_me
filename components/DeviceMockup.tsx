@@ -137,7 +137,7 @@ function MiniSitePreview({ isDark }: { isDark: boolean }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
               <div style={{ color: txt3, fontSize: 7, marginBottom: 2 }}>{"# system stats"}</div>
               {[
-                { label: "Experience",   value: "5+ yrs", pct: 85, color: indigo },
+                { label: "Experience",   value: "2+ yrs", pct: 85, color: indigo },
                 { label: "Projects",     value: "30+",    pct: 75, color: cyan },
                 { label: "Users",        value: "10M+",   pct: 92, color: "#a78bfa" },
                 { label: "Uptime",       value: "99.9%",  pct: 99, color: green },
@@ -212,7 +212,7 @@ function TabletPreview({ isDark }: { isDark: boolean }) {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, borderTop: `1px solid ${brd}`, paddingTop: 10 }}>
           {[
-            { n: "5+", l: "Years exp.", c: indigo },
+            { n: "2+", l: "Years exp.", c: indigo },
             { n: "30+", l: "Projects", c: isDark?"#22d3ee":"#0891b2" },
             { n: "10M+", l: "Users", c: "#a78bfa" },
             { n: "99%", l: "Coffee ratio", c: isDark?"#10b981":"#059669" },
@@ -295,7 +295,7 @@ function PhonePreview({ isDark }: { isDark: boolean }) {
 
         {/* Stats row */}
         <div style={{ display: "flex", justifyContent: "space-between", borderTop: `1px solid ${brd}`, paddingTop: 8 }}>
-          {[["5+","yrs"],["30+","projects"],["10M+","users"]].map(([n,l])=>(
+          {[["2+","yrs"],["30+","projects"],["10M+","users"]].map(([n,l])=>(
             <div key={l} style={{ textAlign: "center" }}>
               <div style={{ fontSize: 10, fontWeight: 800, color: indigo, fontFamily: "'Oxanium', sans-serif", lineHeight: 1 }}>{n}</div>
               <div style={{ fontSize: 6, color: txt3, fontFamily: "sans-serif" }}>{l}</div>

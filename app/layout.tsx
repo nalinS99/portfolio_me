@@ -13,7 +13,7 @@ import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Nalin S Bandara — Software Engineer",
-  description: "Software engineer based in Colombo, Sri Lanka. Building fast, reliable, well-crafted software.",
+  description: " engineer based in Colombo, Sri Lanka. Building fast, reliable, well-crafted .",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
