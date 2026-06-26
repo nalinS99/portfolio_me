@@ -4,7 +4,7 @@ import { usePortfolioData } from "@/lib/clientStore";
 
 
 export default function AdminOverview() {
-  const { projects, skills, experience, posts } = usePortfolioData();
+  const { projects, skills, experience, posts, about: aboutInfo } = usePortfolioData();
   const SECTIONS = [
   { label:"Projects", count: projects.length, active: projects.filter(p=>p.status==="production").length, href:"/admin/projects", color:"var(--cyan)", desc:"Featured & all projects" },
   { label:"Skills", count: skills.length, active: skills.filter(s=>s.level>=80).length, href:"/admin/skills", color:"var(--indigo)", desc:"Skills & proficiency levels" },
