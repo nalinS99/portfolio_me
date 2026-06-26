@@ -1,10 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { getExperience, getSkills, getAboutInfo } from "@/lib/store";
-const experience = getExperience();
-const skills = getSkills();
-const aboutInfo = getAboutInfo();
+import { usePortfolioData } from "@/lib/clientStore";
 import { useTheme } from "@/components/ThemeProvider";
 
 /* ── Apple macOS-style window ───────────────────────── */
@@ -375,6 +372,7 @@ function SkillItem({ name, level }: { name:string; level:number }) {
 }
 
 export default function About() {
+  const { experience, skills, about: aboutInfo } = usePortfolioData();
   return (
     <div style={{ position:"relative", zIndex:10 }}>
       {/* Hero */}

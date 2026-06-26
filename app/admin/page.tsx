@@ -1,20 +1,16 @@
 "use client";
 import Link from "next/link";
-import { getProjects, getSkills, getExperience, getPosts, getAboutInfo } from "@/lib/store";
-const projects = getProjects();
-const skills = getSkills();
-const experience = getExperience();
-const posts = getPosts();
-const aboutInfo = getAboutInfo();
+import { usePortfolioData } from "@/lib/clientStore";
 
-const SECTIONS = [
+
+export default function AdminOverview() {
+  const { projects, skills, experience, posts } = usePortfolioData();
+  const SECTIONS = [
   { label:"Projects", count: projects.length, active: projects.filter(p=>p.status==="production").length, href:"/admin/projects", color:"var(--cyan)", desc:"Featured & all projects" },
   { label:"Skills", count: skills.length, active: skills.filter(s=>s.level>=80).length, href:"/admin/skills", color:"var(--indigo)", desc:"Skills & proficiency levels" },
   { label:"Experience", count: experience.length, active: 1, href:"/admin/experience", color:"var(--violet)", desc:"Work history & roles" },
   { label:"Blog Posts", count: posts.length, active: posts.filter(p=>p.published).length, href:"/admin/blog", color:"var(--green)", desc:"Published & draft posts" },
 ];
-
-export default function AdminOverview() {
   return (
     <div style={{ padding:"2.5rem", maxWidth:1000 }}>
       {/* Header */}

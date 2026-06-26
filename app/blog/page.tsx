@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { getPublishedPosts } from "@/lib/store";
+import { usePortfolioData, publishedPosts } from "@/lib/clientStore";
 
 export default function BlogPage() {
-  const posts = getPublishedPosts();
+  const portfolioData = usePortfolioData();
+  const posts = publishedPosts(portfolioData);
   const categories = ["All", ...Array.from(new Set(posts.map(p=>p.category)))];
 
   return (

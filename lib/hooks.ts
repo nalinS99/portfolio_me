@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 /**
  * Like useState but persists the value in localStorage.
@@ -36,4 +36,37 @@ export function useReveal() {
     document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
+}
+
+/**
+ * useApiStore — replaces useLocalStorage for admin pages.
+ * Loads data from /api/data/<section> and saves back via POST.
+ * Falls back to defaultValue while loading.
+ */
+export function useApiStore<T>(
+  section: string,
+  defaultValue: T
+): [T, (value: T) => Promise<void>, boolean] {
+  const [data, setData] = useState<T>(defaultValue);
+  const [loading, setLoading] = useState(true);
+
+  // Load on mount
+  useEffect(() => {
+    fetch(`/api/data/${section}`)
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false); })
+      .catch(() => { setData(defaultValue); setLoading(false); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
+
+  const save = useCallback(async (value: T) => {
+    setData(value);
+    await fetch(`/api/data/${section}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+  }, [section]);
+
+  return [data, save, loading];
 }

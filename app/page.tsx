@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { getProjects, getSkills, getExperience, getPublishedPosts, getAboutInfo } from "@/lib/store";
+import { usePortfolioData, publishedPosts, featuredProjects } from "@/lib/clientStore";
 import DeviceMockup from "@/components/DeviceMockup";
 
 /* ── Typewriter ─────────────────────────────────────── */
@@ -316,11 +316,9 @@ function ContactForm() {
 
 /* ── Main page ──────────────────────────────────────── */
 export default function Home() {
-  const projects  = getProjects();
-  const skills    = getSkills();
-  const experience = getExperience();
-  const aboutInfo = getAboutInfo();
-  const posts    = getPublishedPosts().slice(0,3);
+  const portfolioData = usePortfolioData();
+  const { projects, skills, experience, about: aboutInfo } = portfolioData;
+  const posts = publishedPosts(portfolioData).slice(0, 3);
   const featured = projects.filter(p=>p.featured);
 
   return (

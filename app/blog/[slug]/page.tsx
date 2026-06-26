@@ -1,6 +1,6 @@
 "use client";
 import { use } from "react";
-import { getPostBySlug } from "@/lib/store";
+import { usePortfolioData, postBySlug } from "@/lib/clientStore";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -39,9 +39,11 @@ function renderContent(content: string) {
 
 export default function Post({ params }: { params: Promise<{slug:string}> }) {
   const { slug } = use(params);
-  const post = getPostBySlug(slug);
-  if (!post || !post.published) notFound();
+  const portfolioData = usePortfolioData();
+  const post = portfolioData.loading ? null : postBySlug(portfolioData, slug);
+  if (!portfolioData.loading && (!post || !post.published)) notFound();
 
+  if (!post) return <div style={{padding:"10rem 2rem",textAlign:"center",color:"var(--text3)"}}>Loading…</div>;
   return (
     <div style={{ position:"relative", zIndex:10, maxWidth:1100, margin:"0 auto", padding:"8rem 1.5rem 6rem" }}>
       <Link href="/blog" className="back-link" style={{display:"inline-flex",alignItems:"center",gap:".4rem",fontSize:".85rem",color:"var(--text3)",marginBottom:"3rem",fontFamily:"'Fira Code',monospace"}}>

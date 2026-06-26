@@ -1,6 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
-import { useLocalStorage } from "@/lib/hooks";
+import { useState, useCallback, useRef } from "react";
+import { useApiStore } from "@/lib/hooks";
 import { projects as initialData, type Project } from "@/lib/data";
 import { Modal, Field, TagInput, Toggle, ConfirmDialog, AdminPageHeader, useToast, Toast } from "@/components/AdminUI";
 
@@ -98,7 +98,14 @@ function ImagePicker({ value, onChange }: { value: string; onChange: (v: string)
 }
 
 export default function AdminProjects() {
-  const [items, setItems] = useLocalStorage<Project[]>("admin_projects", initialData);
+  const [items, _saveItems, _loading] = useApiStore<Project[]>("projects", initialData);
+  const [localItems, setLocalItemsState] = useState<Project[] | null>(null);
+  const activeItems = localItems !== null ? localItems : items;
+  const setItems = useCallback((val: Project[] | ((prev: Project[]) => Project[])) => {
+    const next = typeof val === "function" ? val(activeItems) : val;
+    setLocalItemsState(next);
+    _saveItems(next);
+  }, [activeItems, _saveItems]);
   const [form, setForm]   = useState<Project>(EMPTY);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId]       = useState<string|null>(null);
@@ -109,8 +116,8 @@ export default function AdminProjects() {
   const openEdit = (p: Project) => { setForm({...p}); setEditId(p.id); setModalOpen(true); };
   const save = () => {
     if (!form.title.trim()) return;
-    if (editId) { setItems(items.map(i=>i.id===editId?form:i)); show("Project updated!"); }
-    else        { setItems([...items,form]); show("Project added!"); }
+    if (editId) { setItems(activeItems.map(i=>i.id===editId?form:i)); show("Project updated!"); }
+    else        { setItems([...activeItems,form]); show("Project added!"); }
     setModalOpen(false);
   };
 
@@ -132,7 +139,7 @@ export default function AdminProjects() {
             </tr>
           </thead>
           <tbody>
-            {items.map(p=>(
+            {activeItems.map(p=>(
               <tr key={p.id}>
                 <td><ProjectThumb image={p.image} title={p.title} accent={p.accentColor} /></td>
                 <td style={{ color:"var(--text)",fontWeight:500 }}>{p.title}</td>
@@ -143,7 +150,7 @@ export default function AdminProjects() {
                   </div>
                 </td>
                 <td><span className={`badge ${STATUS_BADGE[p.status]}`}>{p.status}</span></td>
-                <td><Toggle checked={p.featured} onChange={v=>setItems(items.map(i=>i.id===p.id?{...i,featured:v}:i))} /></td>
+                <td><Toggle checked={p.featured} onChange={v=>setItems(activeItems.map(i=>i.id===p.id?{...i,featured:v}:i))} /></td>
                 <td>
                   <div style={{ display:"flex",gap:".4rem" }}>
                     <button className="btn btn-ghost btn-sm btn-icon" onClick={()=>openEdit(p)}>✎</button>
@@ -195,7 +202,7 @@ export default function AdminProjects() {
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} message="This project will be permanently removed from your portfolio." onConfirm={()=>{setItems(items.filter(i=>i.id!==deleteId));setDeleteId(null);show("Deleted.","error")}} onCancel={()=>setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} message="This project will be permanently removed from your portfolio." onConfirm={()=>{setItems(activeItems.filter(i=>i.id!==deleteId));setDeleteId(null);show("Deleted.","error")}} onCancel={()=>setDeleteId(null)} />
       <Toast toast={toast} />
     </div>
   );

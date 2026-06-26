@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { getAboutInfo } from "@/lib/store";
-const aboutInfo = getAboutInfo();
+import { usePortfolioData } from "@/lib/clientStore";
 
 export default function Footer() {
+  const { about: aboutInfo } = usePortfolioData();
   return (
     <footer style={{ position:"relative", background:"var(--bg2)", padding:"3rem 0 2rem", zIndex:10, overflow:"hidden" }}>
       {/* Gradient top border */}

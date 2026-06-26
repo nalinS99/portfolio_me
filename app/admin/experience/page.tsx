@@ -1,13 +1,20 @@
 "use client";
-import { useState } from "react";
-import { useLocalStorage } from "@/lib/hooks";
+import { useState, useCallback } from "react";
+import { useApiStore } from "@/lib/hooks";
 import { experience as initialData, type Experience } from "@/lib/data";
 import { Modal, Field, TagInput, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
 const EMPTY: Experience = { id:"", role:"", company:"", location:"", startYear:"", endYear:"Present", description:"", tech:[] };
 
 export default function AdminExperience() {
-  const [items, setItems] = useLocalStorage<Experience[]>("admin_experience", initialData);
+  const [items, _saveItems, _loading] = useApiStore<Experience[]>("experience", initialData);
+  const [localItems, setLocalItemsState] = useState<Experience[] | null>(null);
+  const activeItems = localItems !== null ? localItems : items;
+  const setItems = useCallback((val: Experience[] | ((prev: Experience[]) => Experience[])) => {
+    const next = typeof val === "function" ? val(activeItems) : val;
+    setLocalItemsState(next);
+    _saveItems(next);
+  }, [activeItems, _saveItems]);
   const [form, setForm] = useState<Experience>(EMPTY);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
@@ -18,7 +25,7 @@ export default function AdminExperience() {
   const openEdit = (e: Experience) => { setForm({...e}); setEditId(e.id); setModalOpen(true); };
   const save = () => {
     if (!form.role.trim()||!form.company.trim()) return;
-    if (editId) { setItems(items.map(i=>i.id===editId?form:i)); show("Experience updated!"); }
+    if (editId) { setItems(activeItems.map(i=>i.id===editId?form:i)); show("Experience updated!"); }
     else { setItems([form,...items]); show("Experience added!"); }
     setModalOpen(false);
   };
@@ -30,7 +37,7 @@ export default function AdminExperience() {
         action={<button className="btn btn-primary btn-sm" onClick={openNew}>+ Add Entry</button>} />
 
       <div style={{ display:"flex", flexDirection:"column", gap:"1px", background:"var(--border2)", borderRadius:12, overflow:"hidden" }}>
-        {items.map((exp)=>(
+        {activeItems.map((exp)=>(
           <div key={exp.id} style={{ background:"var(--surface)", padding:"1.5rem", display:"grid", gridTemplateColumns:"160px 1fr auto", gap:"1.5rem", alignItems:"start" }}>
             <div>
               <div style={{ fontFamily:"'Fira Code',monospace", fontSize:".72rem", color:"var(--text3)" }}>{exp.startYear} — {exp.endYear}</div>
@@ -68,7 +75,7 @@ export default function AdminExperience() {
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} message="This experience entry will be permanently removed." onConfirm={()=>{setItems(items.filter(i=>i.id!==deleteId));setDeleteId(null);show("Entry deleted.","error")}} onCancel={()=>setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} message="This experience entry will be permanently removed." onConfirm={()=>{setItems(activeItems.filter(i=>i.id!==deleteId));setDeleteId(null);show("Entry deleted.","error")}} onCancel={()=>setDeleteId(null)} />
       <Toast toast={toast} />
     </div>
   );

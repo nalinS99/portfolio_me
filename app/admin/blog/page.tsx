@@ -1,13 +1,20 @@
 "use client";
-import { useState } from "react";
-import { useLocalStorage } from "@/lib/hooks";
+import { useState, useCallback } from "react";
+import { useApiStore } from "@/lib/hooks";
 import { posts as initialData, type Post } from "@/lib/data";
 import { Field, TagInput, Toggle, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
 const EMPTY: Post = { slug:"", title:"", excerpt:"", date:"", category:"", readTime:"", tags:[], published:false, content:"" };
 
 export default function AdminBlog() {
-  const [items, setItems] = useLocalStorage<Post[]>("admin_posts", initialData);
+  const [items, _saveItems, _loading] = useApiStore<Post[]>("posts", initialData);
+  const [localItems, setLocalItemsState] = useState<Post[] | null>(null);
+  const activeItems = localItems !== null ? localItems : items;
+  const setItems = useCallback((val: Post[] | ((prev: Post[]) => Post[])) => {
+    const next = typeof val === "function" ? val(activeItems) : val;
+    setLocalItemsState(next);
+    _saveItems(next);
+  }, [activeItems, _saveItems]);
   const [editing, setEditing] = useState<Post|null>(null);
   const [isNew, setIsNew] = useState(false);
   const [deleteSlug, setDeleteSlug] = useState<string|null>(null);
@@ -20,8 +27,8 @@ export default function AdminBlog() {
   const openEdit = (p: Post) => { setEditing({...p}); setIsNew(false); };
   const save = () => {
     if (!editing||!editing.title.trim()) return;
-    if (isNew) { setItems([...items, editing]); show("Post created!"); }
-    else { setItems(items.map(i=>i.slug===editing.slug?editing:i)); show("Post saved!"); }
+    if (isNew) { setItems([...activeItems, editing]); show("Post created!"); }
+    else { setItems(activeItems.map(i=>i.slug===editing.slug?editing:i)); show("Post saved!"); }
     setEditing(null);
   };
   const set = <K extends keyof Post>(k: K) => (v: Post[K]) => setEditing(e=>e?{...e,[k]:v}:e);
@@ -102,7 +109,7 @@ export default function AdminBlog() {
             </tr>
           </thead>
           <tbody>
-            {items.map(p=>(
+            {activeItems.map(p=>(
               <tr key={p.slug}>
                 <td style={{ color:"var(--text)", fontWeight:500, maxWidth:280 }}>
                   <div style={{ whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.title}</div>
@@ -111,7 +118,7 @@ export default function AdminBlog() {
                 <td><span className="badge badge-indigo">{p.category}</span></td>
                 <td style={{ fontFamily:"'Fira Code',monospace", fontSize:".78rem", color:"var(--text3)" }}>{p.date}</td>
                 <td>
-                  <Toggle checked={p.published} onChange={v=>setItems(items.map(i=>i.slug===p.slug?{...i,published:v}:i))} label={p.published?"Live":"Draft"} />
+                  <Toggle checked={p.published} onChange={v=>setItems(activeItems.map(i=>i.slug===p.slug?{...i,published:v}:i))} label={p.published?"Live":"Draft"} />
                 </td>
                 <td>
                   <div style={{ display:"flex", gap:".4rem" }}>
@@ -125,7 +132,7 @@ export default function AdminBlog() {
         </table>
       </div>
 
-      <ConfirmDialog open={!!deleteSlug} message="This post will be permanently deleted." onConfirm={()=>{setItems(items.filter(i=>i.slug!==deleteSlug));setDeleteSlug(null);show("Post deleted.","error")}} onCancel={()=>setDeleteSlug(null)} />
+      <ConfirmDialog open={!!deleteSlug} message="This post will be permanently deleted." onConfirm={()=>{setItems(activeItems.filter(i=>i.slug!==deleteSlug));setDeleteSlug(null);show("Post deleted.","error")}} onCancel={()=>setDeleteSlug(null)} />
       <Toast toast={toast} />
     </div>
   );

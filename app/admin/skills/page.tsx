@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useLocalStorage } from "@/lib/hooks";
+import { useState, useCallback } from "react";
+import { useApiStore } from "@/lib/hooks";
 import { skills as initialData, type Skill } from "@/lib/data";
 import { Modal, Field, RangeInput, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
 
@@ -8,7 +8,14 @@ const CATS = ["Frontend","Backend","Infrastructure","Other"] as const;
 const EMPTY: Skill = { id:"", name:"", level:80, category:"Frontend" };
 
 export default function AdminSkills() {
-  const [items, setItems] = useLocalStorage<Skill[]>("admin_skills", initialData);
+  const [items, _saveItems, _loading] = useApiStore<Skill[]>("skills", initialData);
+  const [localItems, setLocalItemsState] = useState<Skill[] | null>(null);
+  const activeItems = localItems !== null ? localItems : items;
+  const setItems = useCallback((val: Skill[] | ((prev: Skill[]) => Skill[])) => {
+    const next = typeof val === "function" ? val(activeItems) : val;
+    setLocalItemsState(next);
+    _saveItems(next);
+  }, [activeItems, _saveItems]);
   const [form, setForm] = useState<Skill>(EMPTY);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string|null>(null);
@@ -16,13 +23,13 @@ export default function AdminSkills() {
   const [activeCat, setActiveCat] = useState<string>("All");
   const { toast, show } = useToast();
 
-  const filtered = activeCat==="All" ? items : items.filter(s=>s.category===activeCat);
+  const filtered = activeCat==="All" ? activeItems : activeItems.filter(s=>s.category===activeCat);
   const openNew = () => { setForm({...EMPTY, id:Date.now().toString()}); setEditId(null); setModalOpen(true); };
   const openEdit = (s: Skill) => { setForm({...s}); setEditId(s.id); setModalOpen(true); };
   const save = () => {
     if (!form.name.trim()) return;
-    if (editId) { setItems(items.map(i=>i.id===editId?form:i)); show("Skill updated!"); }
-    else { setItems([...items,form]); show("Skill added!"); }
+    if (editId) { setItems(activeItems.map((i: typeof form)=>i.id===editId?form:i)); show("Skill updated!"); }
+    else { setItems([...activeItems,form]); show("Skill added!"); }
     setModalOpen(false);
   };
 
@@ -37,7 +44,7 @@ export default function AdminSkills() {
           <button key={c} onClick={()=>setActiveCat(c)}
             className={`badge ${activeCat===c?"badge-indigo":"badge-gray"}`}
             style={{ border:"none", padding:".35rem .9rem", fontSize:".78rem", fontWeight:500 }}>
-            {c} {c==="All"?`(${items.length})`:(`(${items.filter(s=>s.category===c).length})`)}
+            {c} {c==="All"?`(${activeItems.length})`:(`(${activeItems.filter(s=>s.category===c).length})`)}
           </button>
         ))}
       </div>
@@ -81,7 +88,7 @@ export default function AdminSkills() {
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} message="This skill will be removed." onConfirm={()=>{setItems(items.filter(i=>i.id!==deleteId));setDeleteId(null);show("Skill deleted.","error")}} onCancel={()=>setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} message="This skill will be removed." onConfirm={()=>{setItems(activeItems.filter(i=>i.id!==deleteId));setDeleteId(null);show("Skill deleted.","error")}} onCancel={()=>setDeleteId(null)} />
       <Toast toast={toast} />
     </div>
   );
