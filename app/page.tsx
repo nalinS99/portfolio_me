@@ -448,7 +448,7 @@ export default function Home() {
             ))}
           </div>
 
-          {/* <Reveal style={{ marginTop:"3rem", paddingTop:"2.5rem", borderTop:"1px solid var(--border2)" }} direction="up" delay={200}>
+          <Reveal style={{ marginTop:"3rem", paddingTop:"2.5rem", borderTop:"1px solid var(--border2)" }} direction="up" delay={200}>
             <p style={{ fontFamily:"'Fira Code',monospace", fontSize:".75rem", color:"var(--text3)", marginBottom:"1rem" }}>{"// also familiar with"}</p>
             <div style={{ display:"flex", flexWrap:"wrap", gap:".5rem" }}>
               {["Prisma","tRPC","Zod","Playwright","Jest","Tailwind CSS","Nginx","Cloudflare","Stripe","Socket.io","Elasticsearch","MongoDB"].map((t,i)=>(
@@ -457,7 +457,7 @@ export default function Home() {
                 </Reveal>
               ))}
             </div>
-          </Reveal> */}
+          </Reveal>
         </div>
       </section>
 
