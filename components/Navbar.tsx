@@ -52,7 +52,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => { queueMicrotask(() => setOpen(false)); }, [pathname]);
+  useEffect(() => { setOpen(false); }, [pathname]);
 
   const isPageActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -210,12 +210,12 @@ export default function Navbar() {
         <div style={{ padding: "1rem 1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.15rem" }}>
           <p style={{ fontSize: "0.62rem", fontFamily: "'Fira Code',monospace", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--text3)", padding: "0.25rem 0.75rem 0.5rem" }}>Sections</p>
           {ANCHOR_LINKS.map(l => (
-            <Link key={l.href} href={l.href} className="nav-item" style={{ fontSize: "0.95rem", padding: "0.65rem 0.75rem" }}>{l.label}</Link>
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="nav-item" style={{ fontSize: "0.95rem", padding: "0.65rem 0.75rem" }}>{l.label}</Link>
           ))}
           <div style={{ height: 1, background: "var(--border2)", margin: "0.5rem 0.75rem" }} />
           <p style={{ fontSize: "0.62rem", fontFamily: "'Fira Code',monospace", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--text3)", padding: "0.25rem 0.75rem 0.5rem" }}>Pages</p>
           {PAGE_LINKS.map(l => (
-            <Link key={l.href} href={l.href} className={`nav-item${isPageActive(l.href) ? " active" : ""}`}
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className={`nav-item${isPageActive(l.href) ? " active" : ""}`}
               style={{ fontSize: "0.95rem", padding: "0.65rem 0.75rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               {l.label}
               <span style={{ fontSize: "0.68rem", color: "var(--indigo)", fontFamily: "'Fira Code',monospace" }}>page →</span>
@@ -230,7 +230,7 @@ export default function Navbar() {
             }}>
               <DownloadIcon /> Download CV
             </button>
-            <Link href="/#contact" style={{
+            <Link href="/#contact" onClick={() => setOpen(false)} style={{
               display: "flex", justifyContent: "center",
               padding: "0.65rem 1.25rem", borderRadius: 999,
               background: "linear-gradient(135deg, var(--indigo), #7c3aed)",
