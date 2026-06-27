@@ -8,7 +8,7 @@ export default function BlogPage() {
   const categories = ["All", ...Array.from(new Set(posts.map(p=>p.category)))];
 
   return (
-    <div style={{ position:"relative", zIndex:10 }}>
+    <div style={{ position:"relative", zIndex:10, background:"var(--bg)", minHeight:"100vh" }}>
       <section style={{ padding:"9rem 1.5rem 4rem", maxWidth:1100, margin:"0 auto" }}>
         <p className="label fade-up d1" style={{marginBottom:".75rem"}}>Writing</p>
         <h1 className="fade-up d2" style={{ fontSize:"clamp(2.5rem,6vw,4rem)", fontWeight:800, lineHeight:1.05, marginBottom:"1rem" }}>Blog</h1>

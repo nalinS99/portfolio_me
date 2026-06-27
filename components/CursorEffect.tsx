@@ -14,6 +14,8 @@ export default function CursorEffect() {
   const rippleId   = useRef(0);
 
   useEffect(() => {
+    // Don't run on touch devices
+    if (window.matchMedia("(pointer: coarse)").matches) return;
     const canvas = canvasRef.current!;
     const ctx    = canvas.getContext("2d")!;
 

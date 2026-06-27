@@ -80,7 +80,10 @@ body {
   overflow-x: hidden;
   transition: background 0.3s, color 0.3s;
 }
-*, *:hover { cursor: none !important; }
+/* Custom cursor — desktop only */
+@media (pointer: fine) {
+  *, *:hover { cursor: none !important; }
+}
 a { color: inherit; text-decoration: none; }
 ::selection { background: rgba(99,102,241,0.25); color: var(--text); }
 ::-webkit-scrollbar { width: 4px; }
@@ -111,6 +114,11 @@ body:has(a:hover) #cursor,
 body:has(button:hover) #cursor { width: 4px; height: 4px; }
 body:has(a:hover) #cursor-ring,
 body:has(button:hover) #cursor-ring { width: 48px; height: 48px; border-color: var(--indigo); }
+/* Hide custom cursor on touch devices */
+@media (pointer: coarse) {
+  #cursor, #cursor-ring { display: none !important; }
+}
+
 
 /* ── Backgrounds ────────────────────────────────────── */
 .bg-grid {
