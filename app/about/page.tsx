@@ -13,7 +13,6 @@ function MacWindow() {
   const [typed, setTyped] = useState("");
   const termLinesRef = React.useRef<string[]>([]);
 
-  // Live clock
   useEffect(() => {
     const update = () => {
       const d = new Date();
@@ -24,7 +23,6 @@ function MacWindow() {
     return () => clearInterval(t);
   }, []);
 
-  // Terminal typewriter on that tab
   useEffect(() => {
     if (tab !== "terminal") { setTimeout(() => { setTyped(""); }, 0); return; }
     const terminalLines = [
@@ -55,7 +53,6 @@ function MacWindow() {
     return () => clearInterval(tick);
   }, [tab]);
 
-  // Theme tokens
   const win   = isDark ? "#1a1d2e" : "#ffffff";
   const _bar  = isDark ? "#141624" : "#f0f0f0"; void _bar;
   const brd   = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)";
@@ -77,7 +74,6 @@ function MacWindow() {
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:".875rem" }}>
-      {/* ── Window ── */}
       <div style={{
         background: win,
         border: `1px solid ${brd}`,
@@ -88,8 +84,6 @@ function MacWindow() {
           : "0 8px 40px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)",
         transition: "all 0.3s ease",
       }}>
-
-        {/* Title bar */}
         <div style={{
           background: isDark
             ? "linear-gradient(180deg, #1e2133 0%, #161826 100%)"
@@ -101,12 +95,11 @@ function MacWindow() {
           gap: "0.75rem",
           userSelect: "none",
         }}>
-          {/* Traffic lights */}
           <div style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
             {[
-              { bg:"#ff5f57", shadow:"rgba(255,95,87,0.5)", hover:"#ff3b30" },
-              { bg:"#febc2e", shadow:"rgba(254,188,46,0.5)", hover:"#ff9f0a" },
-              { bg:"#28c840", shadow:"rgba(40,200,64,0.5)",  hover:"#30d158" },
+              { bg:"#ff5f57", shadow:"rgba(255,95,87,0.5)" },
+              { bg:"#febc2e", shadow:"rgba(254,188,46,0.5)" },
+              { bg:"#28c840", shadow:"rgba(40,200,64,0.5)" },
             ].map((dot, i) => (
               <div key={i} style={{
                 width: 12, height: 12, borderRadius: "50%",
@@ -120,21 +113,16 @@ function MacWindow() {
               />
             ))}
           </div>
-
-          {/* Window title + clock */}
-          <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"0.5rem" }}>
+          <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <span style={{ fontSize:".72rem", color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)", fontFamily: mono, letterSpacing:"0.02em" }}>
               nalin@portfolio
             </span>
           </div>
-
-          {/* Live clock top-right */}
           <div style={{ flexShrink:0, fontFamily: mono, fontSize:".65rem", color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)", letterSpacing:"0.04em" }}>
             {time}
           </div>
         </div>
 
-        {/* Tab bar */}
         <div style={{
           background: isDark ? "#141624" : "#e8e8e8",
           borderBottom: `1px solid ${brd}`,
@@ -149,9 +137,7 @@ function MacWindow() {
               background: tab === t.id ? tabActive : tabInactive,
               border: "none",
               borderRight: `1px solid ${brd}`,
-              borderBottom: tab === t.id
-                ? `2px solid ${isDark ? "#6366f1" : "#4f46e5"}`
-                : "2px solid transparent",
+              borderBottom: tab === t.id ? `2px solid ${isDark ? "#6366f1" : "#4f46e5"}` : "2px solid transparent",
               color: tab === t.id ? txt : txt3,
               fontFamily: mono, fontSize: ".68rem",
               cursor: "pointer", whiteSpace: "nowrap",
@@ -163,7 +149,6 @@ function MacWindow() {
           ))}
         </div>
 
-        {/* Content area */}
         <div style={{
           background: win,
           padding: "1.25rem 1.5rem",
@@ -171,19 +156,17 @@ function MacWindow() {
           fontFamily: mono, fontSize: ".78rem", lineHeight: 1.85,
           color: txt2,
         }}>
-
-          {/* ── ABOUT tab ── */}
           {tab === "about" && (
             <div>
               <div style={{ color: txt3, marginBottom:".25rem" }}>{"// Nalin S Bandara — about.json"}</div>
               <div style={{ color: isDark ? "#94a3b8" : "#64748b" }}>{"{"}</div>
               {[
-                { k:"name",       v:'"Nalin S Bandara"',   type:"str" },
-                { k:"role",       v:'"Software Engineer"', type:"str" },
-                { k:"location",   v:'"Colombo, LK 🇱🇰"',  type:"str" },
-                { k:"experience", v:'"2+ years"',          type:"str" },
+                { k:"name",       v:'"Nalin S Bandara"',      type:"str" },
+                { k:"role",       v:'"Software Engineer"',    type:"str" },
+                { k:"location",   v:'"Colombo, LK 🇱🇰"',     type:"str" },
+                { k:"experience", v:'"2+ years"',             type:"str" },
                 { k:"focus",      v:'"Full-Stack & Systems"', type:"str" },
-                { k:"available",  v:"true",                type:"bool" },
+                { k:"available",  v:"true",                   type:"bool" },
               ].map(({k,v,type}) => (
                 <div key={k} style={{ paddingLeft:"1.25rem", display:"flex", gap:".4rem", flexWrap:"wrap" }}>
                   <span style={{ color: isDark ? "#34d399" : "#059669" }}>&quot;{k}&quot;</span>
@@ -209,7 +192,6 @@ function MacWindow() {
             </div>
           )}
 
-          {/* ── STACK tab ── */}
           {tab === "stack" && (
             <div>
               <div style={{ color: txt3, marginBottom:".75rem" }}>{"// tech stack — stack.ts"}</div>
@@ -238,7 +220,6 @@ function MacWindow() {
             </div>
           )}
 
-          {/* ── STATS tab ── */}
           {tab === "stats" && (
             <div style={{ display:"flex", flexDirection:"column", gap:".6rem" }}>
               <div style={{ color: txt3, marginBottom:".25rem" }}>{"# system stats"}</div>
@@ -271,7 +252,6 @@ function MacWindow() {
             </div>
           )}
 
-          {/* ── TERMINAL tab ── */}
           {tab === "terminal" && (
             <div style={{
               background: isDark ? "#0a0c14" : "#1a1b26",
@@ -295,7 +275,6 @@ function MacWindow() {
           )}
         </div>
 
-        {/* Status bar */}
         <div style={{
           background: isDark ? "#141624" : "#e8e8e8",
           borderTop: `1px solid ${brd}`,
@@ -317,17 +296,6 @@ function MacWindow() {
             <span style={{ color: isDark?"#6366f1":"#4f46e5" }}>Colombo</span>
           </div>
         </div>
-      </div>
-
-      {/* ── Quick links row below window ── */}
-      <div style={{ display:"flex", gap:".5rem" }}>
-        {[["GitHub",aboutInfo.github],["LinkedIn",aboutInfo.linkedin],["Twitter",aboutInfo.twitter]].map(([l,h])=>(
-          <a key={l} href={h} target="_blank" rel="noopener noreferrer"
-            className="btn btn-outline btn-sm"
-            style={{ flex:1, justifyContent:"center" }}>
-            {l}
-          </a>
-        ))}
       </div>
 
       <style>{`
@@ -373,9 +341,9 @@ function SkillItem({ name, level }: { name:string; level:number }) {
 
 export default function About() {
   const { experience, skills, about: aboutInfo } = usePortfolioData();
+
   return (
     <div style={{ position:"relative", zIndex:10 }}>
-      {/* Hero */}
       <section style={{ padding:"9rem 1.5rem 5rem", maxWidth:1100, margin:"0 auto" }}>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 400px", gap:"5rem", alignItems:"start" }}>
           <div>
@@ -399,7 +367,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Experience */}
       <section style={{ padding:"5rem 1.5rem", background:"var(--bg2)", borderTop:"1px solid var(--border2)" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <Reveal><p className="label" style={{marginBottom:".75rem"}}>Journey</p><h2 style={{fontSize:"clamp(1.6rem,3vw,2.5rem)",fontWeight:800,marginBottom:"3rem"}}>Experience</h2></Reveal>
@@ -427,7 +394,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Skills */}
       <section style={{ padding:"5rem 1.5rem" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <Reveal><p className="label" style={{marginBottom:".75rem"}}>Expertise</p><h2 style={{fontSize:"clamp(1.6rem,3vw,2.5rem)",fontWeight:800,marginBottom:"3rem"}}>Skills</h2></Reveal>
@@ -444,7 +410,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* CTA */}
       <section style={{ padding:"5rem 1.5rem", background:"var(--bg2)", borderTop:"1px solid var(--border2)", textAlign:"center" }}>
         <div style={{ maxWidth:520, margin:"0 auto" }}>
           <Reveal>
