@@ -2,7 +2,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useApiStore } from "@/lib/hooks";
 import { projects as initialData, type Project } from "@/lib/data";
-import { Modal, Field, TagInput, Toggle, ConfirmDialog, AdminPageHeader, useToast, Toast } from "@/components/AdminUI";
+import { Modal, Field, TagInput, Toggle, ConfirmDialog, AdminPageHeader, useToast, Toast, RichTextEditor } from "@/components/AdminUI";
 
 const EMPTY: Project = { id:"", title:"", description:"", tech:[], status:"production", url:"", github:"", image:"", accentColor:"#6366f1", featured:false };
 const STATUS_OPTS = ["production","beta","open-source","wip"] as const;
@@ -165,7 +165,7 @@ export default function AdminProjects() {
 
       <Modal open={modalOpen} title={editId?"Edit Project":"Add Project"} onClose={()=>setModalOpen(false)} width={620}>
         <Field label="Title"><input className="input" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="Project name" /></Field>
-        <Field label="Description"><textarea className="input" value={form.description} onChange={e=>setForm({...form,description:e.target.value})} placeholder="What does it do?" /></Field>
+        <Field label="Description"><RichTextEditor value={form.description} onChange={v=>setForm({...form,description:v})} placeholder="What does it do? Use bold, bullets..." /></Field>
 
         <ImagePicker value={form.image||""} onChange={v=>setForm({...form,image:v})} />
 

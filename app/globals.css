@@ -853,3 +853,12 @@ img[loading="lazy"].loaded {
   z-index: 1;
   opacity: 0.4;
 }
+
+/* ── Rich text content (from admin editor) ─────────── */
+.rich-content ul, [dangerouslySetInnerHTML] ul,
+div[style] ul { padding-left: 1.25rem; list-style: disc; margin: .4rem 0; }
+div[style] ol { padding-left: 1.25rem; list-style: decimal; margin: .4rem 0; }
+div[style] li { margin: .2rem 0; line-height: 1.7; }
+div[style] h2 { font-size: 1rem; font-weight: 700; margin: .6rem 0 .3rem; }
+div[style] b, div[style] strong { font-weight: 700; }
+div[style] i, div[style] em { font-style: italic; }

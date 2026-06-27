@@ -56,8 +56,8 @@ export default function Post({ params }: { params: Promise<{slug:string}> }) {
             {post.tags.map(t=><span key={t} className="badge badge-gray">{t}</span>)}
           </div>
           <h1 style={{fontSize:"clamp(1.8rem,4vw,3rem)",fontWeight:800,lineHeight:1.1,marginBottom:"1rem"}}>{post.title}</h1>
-          <p style={{fontSize:"1.05rem",color:"var(--text2)",lineHeight:1.75,marginBottom:"2.5rem",paddingBottom:"2rem",borderBottom:"1px solid var(--border2)"}}>{post.excerpt}</p>
-          <div>{renderContent(post.content)}</div>
+          <div style={{fontSize:"1.05rem",color:"var(--text2)",lineHeight:1.75,marginBottom:"2.5rem",paddingBottom:"2rem",borderBottom:"1px solid var(--border2)"}} dangerouslySetInnerHTML={{ __html: post.excerpt }} />
+          <div dangerouslySetInnerHTML={{ __html: post.content }} style={{ lineHeight:1.8 }} />
         </div>
         <aside style={{position:"sticky",top:"6rem"}} className="hide-md">
           <div className="card-flat" style={{padding:"1.25rem",marginBottom:"1rem"}}>

@@ -408,7 +408,7 @@ export default function Home() {
                     <h3 style={{ fontSize:"1.05rem", fontWeight:700, color:"var(--text)", lineHeight:1.3 }}>{p.title}</h3>
                     <span className={`badge ${STATUS_BADGE[p.status]}`} style={{ flexShrink:0, marginLeft:".75rem" }}>{p.status}</span>
                   </div>
-                  <p style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.7, marginBottom:"1rem", flex:1 }}>{p.description}</p>
+                  <div style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.7, marginBottom:"1rem", flex:1 }} dangerouslySetInnerHTML={{ __html: p.description }} />
                   <div style={{ display:"flex", flexWrap:"wrap", gap:".35rem", marginBottom:"1rem" }}>
                     {p.tech.map(t=><span key={t} className="badge badge-gray">{t}</span>)}
                   </div>
@@ -492,7 +492,7 @@ export default function Home() {
                           <span style={{ fontSize:".65rem", padding:".2rem .55rem", borderRadius:999, background:"rgba(16,185,129,0.1)", border:"1px solid rgba(16,185,129,0.25)", color:"var(--green)", fontWeight:600 }}>Current</span>
                         )}
                       </div>
-                      <p style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.75, marginBottom:".875rem" }}>{exp.description}</p>
+                      <div style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.75, marginBottom:".875rem" }} dangerouslySetInnerHTML={{ __html: exp.description }} />
                       <div style={{ display:"flex", flexWrap:"wrap", gap:".4rem" }}>
                         {exp.tech.map(t=><span key={t} className="badge badge-gray">{t}</span>)}
                       </div>

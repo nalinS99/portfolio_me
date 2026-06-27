@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { useApiStore } from "@/lib/hooks";
 import { posts as initialData, type Post } from "@/lib/data";
-import { Field, TagInput, Toggle, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
+import { Field, TagInput, Toggle, AdminPageHeader, ConfirmDialog, useToast, Toast, RichTextEditor } from "@/components/AdminUI";
 
 const EMPTY: Post = { slug:"", title:"", excerpt:"", date:"", category:"", readTime:"", tags:[], published:false, content:"" };
 

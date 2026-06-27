@@ -34,7 +34,7 @@ export default function BlogPage() {
                     <span style={{ fontSize:".75rem", color:"var(--text3)", fontFamily:"'Fira Code',monospace" }}>{post.readTime} read</span>
                   </div>
                   <h2 style={{ fontSize:"1.1rem", fontWeight:600, color:"var(--text)", marginBottom:".35rem", lineHeight:1.4 }}>{post.title}</h2>
-                  <p style={{ fontSize:".875rem", color:"var(--text3)", lineHeight:1.6 }}>{post.excerpt}</p>
+                  <div style={{ fontSize:".875rem", color:"var(--text3)", lineHeight:1.6 }} dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                 </div>
                 <div style={{ textAlign:"right", flexShrink:0 }}>
                   <div style={{ fontFamily:"'Fira Code',monospace", fontSize:".72rem", color:"var(--text3)" }}>{post.date}</div>

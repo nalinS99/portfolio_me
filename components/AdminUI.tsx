@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 
 /* ── Toast ──────────────────────────────────────────── */
 export function useToast() {
@@ -156,6 +156,101 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
         }} />
       </button>
       {label && <span style={{ fontSize:".875rem", color:"var(--text2)" }}>{label}</span>}
+    </div>
+  );
+}
+
+/* ── Rich Text Editor ───────────────────────────────── */
+export function RichTextEditor({ value, onChange, placeholder = "Write something..." }: {
+  value: string; onChange: (v: string) => void; placeholder?: string;
+}) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const isUpdating = React.useRef(false);
+
+  // Sync external value → editor (only when not typing)
+  React.useEffect(() => {
+    if (!ref.current || isUpdating.current) return;
+    if (ref.current.innerHTML !== value) {
+      ref.current.innerHTML = value;
+    }
+  }, [value]);
+
+  const exec = (cmd: string, val?: string) => {
+    document.execCommand(cmd, false, val);
+    ref.current?.focus();
+    syncOut();
+  };
+
+  const syncOut = () => {
+    isUpdating.current = true;
+    onChange(ref.current?.innerHTML ?? "");
+    setTimeout(() => { isUpdating.current = false; }, 50);
+  };
+
+  const tools = [
+    { label: "B",    title: "Bold",          cmd: "bold",           style: { fontWeight: 800 } },
+    { label: "I",    title: "Italic",        cmd: "italic",         style: { fontStyle: "italic" } },
+    { label: "U",    title: "Underline",     cmd: "underline",      style: { textDecoration: "underline" } },
+    { label: "• —",  title: "Bullet list",   cmd: "insertUnorderedList", style: {} },
+    { label: "1. —", title: "Numbered list", cmd: "insertOrderedList",   style: {} },
+    { label: "H2",   title: "Heading",       cmd: "formatBlock",    val: "h2", style: { fontWeight: 700, fontSize: ".8rem" } },
+    { label: "¶",    title: "Paragraph",     cmd: "formatBlock",    val: "p",  style: {} },
+    { label: "—",    title: "Clear format",  cmd: "removeFormat",   style: { opacity: .6 } },
+  ] as const;
+
+  return (
+    <div style={{ border: "1px solid var(--border2)", borderRadius: 8, overflow: "hidden", background: "var(--surface)" }}>
+      {/* Toolbar */}
+      <div style={{ display: "flex", gap: ".25rem", padding: ".4rem .6rem", borderBottom: "1px solid var(--border2)", background: "var(--bg2)", flexWrap: "wrap" }}>
+        {tools.map(t => (
+          <button
+            key={t.title}
+            title={t.title}
+            onMouseDown={e => { e.preventDefault(); exec(t.cmd, "val" in t ? t.val : undefined); }}
+            style={{
+              padding: ".25rem .5rem",
+              border: "1px solid var(--border2)",
+              borderRadius: 4,
+              background: "var(--surface2)",
+              color: "var(--text2)",
+              fontSize: ".72rem",
+              cursor: "pointer",
+              fontFamily: "'Fira Code', monospace",
+              ...t.style,
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {/* Editor area */}
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={syncOut}
+        data-placeholder={placeholder}
+        style={{
+          minHeight: 120,
+          padding: ".75rem 1rem",
+          outline: "none",
+          fontSize: ".875rem",
+          lineHeight: 1.75,
+          color: "var(--text)",
+        }}
+      />
+      <style>{`
+        [contenteditable]:empty:before {
+          content: attr(data-placeholder);
+          color: var(--text3);
+          pointer-events: none;
+        }
+        [contenteditable] ul { padding-left: 1.25rem; list-style: disc; }
+        [contenteditable] ol { padding-left: 1.25rem; list-style: decimal; }
+        [contenteditable] h2 { font-size: 1rem; font-weight: 700; margin: .4rem 0; }
+        [contenteditable] p  { margin: .2rem 0; }
+        [contenteditable] b, [contenteditable] strong { font-weight: 700; color: var(--text); }
+      `}</style>
     </div>
   );
 }

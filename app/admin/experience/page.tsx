@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { useApiStore } from "@/lib/hooks";
 import { experience as initialData, type Experience } from "@/lib/data";
-import { Modal, Field, TagInput, AdminPageHeader, ConfirmDialog, useToast, Toast } from "@/components/AdminUI";
+import { Modal, Field, TagInput, AdminPageHeader, ConfirmDialog, useToast, Toast, RichTextEditor } from "@/components/AdminUI";
 
 const EMPTY: Experience = { id:"", role:"", company:"", location:"", startYear:"", endYear:"Present", description:"", tech:[] };
 
@@ -67,7 +67,7 @@ export default function AdminExperience() {
           <Field label="End Year"><input className="input" value={form.endYear} onChange={e=>set("endYear")(e.target.value)} placeholder="Present or 2023" /></Field>
         </div>
         <Field label="Location"><input className="input" value={form.location} onChange={e=>set("location")(e.target.value)} placeholder="Colombo, LK" /></Field>
-        <Field label="Description"><textarea className="input" value={form.description} onChange={e=>set("description")(e.target.value)} placeholder="What did you do? Key achievements..." /></Field>
+        <Field label="Description"><RichTextEditor value={form.description} onChange={set("description")} placeholder="Key responsibilities and achievements..." /></Field>
         <Field label="Tech Stack" hint="Press Enter to add"><TagInput value={form.tech} onChange={set("tech")} /></Field>
         <div style={{ display:"flex", gap:".75rem", justifyContent:"flex-end", marginTop:"1rem", paddingTop:"1rem", borderTop:"1px solid var(--border2)" }}>
           <button className="btn btn-outline btn-sm" onClick={()=>setModalOpen(false)}>Cancel</button>
