@@ -8,6 +8,8 @@ import {
   aboutInfo as defaultAbout,
 } from "@/lib/data";
 
+export const runtime = "edge";
+
 const redis = Redis.fromEnv();
 
 const DEFAULTS: Record<string, unknown> = {
@@ -26,7 +28,6 @@ export async function GET(
 ) {
   const { section } = await params;
   if (!VALID.has(section)) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
   const data = await redis.get(`portfolio:${section}`);
   return NextResponse.json(data ?? DEFAULTS[section]);
 }

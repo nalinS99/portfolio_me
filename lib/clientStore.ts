@@ -1,83 +1,28 @@
 "use client";
-import { useState, useEffect } from "react";
+/**
+ * clientStore.ts
+ * 
+ * usePortfolioData() — reads from DataProvider context (server-injected data).
+ * No client-side fetch needed. Data is already in the page from SSR.
+ */
+import { useData } from "@/components/DataProvider";
+import type { PortfolioData } from "@/components/DataProvider";
 import {
-  projects as defaultProjects,
-  skills as defaultSkills,
-  experience as defaultExperience,
-  posts as defaultPosts,
-  aboutInfo as defaultAbout,
-  type Project, type Skill, type Experience, type Post, type AboutInfo,
+  type Project,
+  type Skill,
+  type Experience,
+  type Post,
+  type AboutInfo,
 } from "@/lib/data";
 
-export type { Project, Skill, Experience, Post, AboutInfo };
-
-export type PortfolioData = {
-  projects: Project[];
-  skills: Skill[];
-  experience: Experience[];
-  posts: Post[];
-  about: AboutInfo;
-  loading: boolean;
-};
-
-// In-memory cache — data fetched once, shared across all components/pages
-// until the browser tab is closed
-let memoryCache: PortfolioData | null = null;
-let fetchPromise: Promise<PortfolioData> | null = null;
-
-async function fetchAll(): Promise<PortfolioData> {
-  if (memoryCache) return memoryCache;
-  if (fetchPromise) return fetchPromise;
-
-  fetchPromise = fetch("/api/data/all")
-    .then(r => r.json())
-    .then(d => {
-      memoryCache = { ...d, loading: false };
-      return memoryCache!;
-    })
-    .catch(() => {
-      const fallback: PortfolioData = {
-        projects: defaultProjects,
-        skills: defaultSkills,
-        experience: defaultExperience,
-        posts: defaultPosts,
-        about: defaultAbout,
-        loading: false,
-      };
-      memoryCache = fallback;
-      return fallback;
-    });
-
-  return fetchPromise;
-}
+export type { Project, Skill, Experience, Post, AboutInfo, PortfolioData };
 
 export function usePortfolioData(): PortfolioData {
-  const [data, setData] = useState<PortfolioData>(
-    memoryCache ?? {
-      projects: [],
-      skills: [],
-      experience: [],
-      posts: [],
-      about: defaultAbout,
-      loading: true,
-    }
-  );
-
-  useEffect(() => {
-    if (memoryCache) {
-      setData(memoryCache);
-      return;
-    }
-    fetchAll().then(setData);
-  }, []);
-
-  return data;
+  return useData();
 }
 
-// Call this after admin saves to invalidate cache
 export function invalidateCache() {
-  memoryCache = null;
-  fetchPromise = null;
+  // No-op: SSR model — refresh the page to get new data
 }
 
 export function publishedPosts(data: PortfolioData) { return data.posts.filter(p => p.published); }

@@ -1,4 +1,7 @@
-import { NextResponse } from "next/server";
+/**
+ * serverData.ts — runs only on the server (RSC / layout).
+ * Fetches all portfolio data from Redis in one shot.
+ */
 import { Redis } from "@upstash/redis";
 import {
   projects as defaultProjects,
@@ -7,12 +10,11 @@ import {
   posts as defaultPosts,
   aboutInfo as defaultAbout,
 } from "@/lib/data";
-
-export const runtime = "edge";
+import type { PortfolioData } from "@/lib/clientStore";
 
 const redis = Redis.fromEnv();
 
-export async function GET() {
+export async function getPortfolioData(): Promise<PortfolioData> {
   try {
     const [projects, skills, experience, posts, about] = await Promise.all([
       redis.get("portfolio:projects"),
@@ -22,25 +24,22 @@ export async function GET() {
       redis.get("portfolio:about"),
     ]);
 
-    return NextResponse.json({
-      projects:   projects   ?? defaultProjects,
-      skills:     skills     ?? defaultSkills,
-      experience: experience ?? defaultExperience,
-      posts:      posts      ?? defaultPosts,
-      about:      about      ?? defaultAbout,
-    }, {
-      headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=600",
-      },
-    });
+    return {
+      projects:   (projects   as never) ?? defaultProjects,
+      skills:     (skills     as never) ?? defaultSkills,
+      experience: (experience as never) ?? defaultExperience,
+      posts:      (posts      as never) ?? defaultPosts,
+      about:      (about      as never) ?? defaultAbout,
+      loading: false,
+    };
   } catch {
-    // Fallback to defaults if Redis fails
-    return NextResponse.json({
+    return {
       projects: defaultProjects,
       skills: defaultSkills,
       experience: defaultExperience,
       posts: defaultPosts,
       about: defaultAbout,
-    });
+      loading: false,
+    };
   }
 }
