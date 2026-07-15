@@ -358,7 +358,7 @@ export default function About() {
             </div>
             <div className="fade-up d4" style={{ display:"flex", gap:".75rem", flexWrap:"wrap" }}>
               <Link href="/#contact" className="btn btn-primary">Start a project</Link>
-              <a href="#" className="btn btn-outline">Download CV</a>
+              <a href="#" className="btn btn-outline" onClick={(e)=>{e.preventDefault();document.querySelector<HTMLButtonElement>('[title="Preview & Download CV"]')?.click();}}>View CV</a>
             </div>
           </div>
           <div className="fade-up d3">

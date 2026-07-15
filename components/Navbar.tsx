@@ -28,22 +28,35 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [cvPreview, setCvPreview] = useState(false);
+  const [cvUrl, setCvUrl] = useState<string | null>(null);
+  const [cvName, setCvName] = useState("CV-Nalin-Bandara.pdf");
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
 
-  const downloadCV = () => {
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const data = localStorage.getItem("admin_cv_base64");
     const name = localStorage.getItem("admin_cv_filename") || "CV-Nalin-Bandara.pdf";
-    if (!data) { alert("CV not available yet."); return; }
+    if (!data) return;
     const bytes = atob(data);
-    const arr   = new Uint8Array(bytes.length);
+    const arr = new Uint8Array(bytes.length);
     for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-    const blob  = new Blob([arr], { type: "application/pdf" });
-    const url   = URL.createObjectURL(blob);
-    const a     = document.createElement("a");
-    a.href = url; a.download = name; a.click();
-    URL.revokeObjectURL(url);
+    const blob = new Blob([arr], { type: "application/pdf" });
+    setCvUrl(URL.createObjectURL(blob));
+    setCvName(name);
+  }, []);
+
+  const openCV = () => {
+    if (!cvUrl) { alert("CV not uploaded yet. Please upload via admin panel."); return; }
+    setCvPreview(true);
+    setOpen(false);
+  };
+
+  const downloadCV = () => {
+    if (!cvUrl) { alert("CV not uploaded yet."); return; }
+    const a = document.createElement("a");
+    a.href = cvUrl; a.download = cvName; a.click();
   };
 
   useEffect(() => {
@@ -159,7 +172,7 @@ export default function Navbar() {
               <button className="theme-btn" onClick={toggle} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
                 {theme === "dark" ? <SunIcon /> : <MoonIcon />}
               </button>
-              <button onClick={downloadCV} title="Download CV" style={{
+              <button onClick={openCV} title="Preview & Download CV" style={{
                 display: "flex", alignItems: "center", gap: "0.35rem",
                 padding: "0.45rem 0.9rem", borderRadius: 999,
                 fontSize: "0.82rem", fontWeight: 600,
@@ -222,13 +235,13 @@ export default function Navbar() {
             </Link>
           ))}
           <div style={{ marginTop: "0.75rem", display:"flex", flexDirection:"column", gap:"0.5rem" }}>
-            <button onClick={downloadCV} style={{
+            <button onClick={openCV} style={{
               display:"flex", alignItems:"center", justifyContent:"center", gap:"0.5rem",
               padding:"0.65rem 1.25rem", borderRadius:999, width:"100%",
               background:"transparent", border:"1px solid var(--border2)",
               color:"var(--text2)", fontWeight:600, fontSize:"0.9rem", cursor:"pointer",
             }}>
-              <DownloadIcon /> Download CV
+              <DownloadIcon /> View CV
             </button>
             <Link href="/#contact" onClick={() => setOpen(false)} style={{
               display: "flex", justifyContent: "center",
@@ -240,6 +253,59 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* CV Preview Modal */}
+      {cvPreview && (
+        <div style={{
+          position:"fixed", inset:0, zIndex:9999,
+          background:"rgba(0,0,0,0.85)", backdropFilter:"blur(8px)",
+          display:"flex", alignItems:"center", justifyContent:"center",
+          padding:"1rem",
+        }} onClick={() => setCvPreview(false)}>
+          <div style={{
+            width:"min(900px,95vw)", height:"min(90vh,1100px)",
+            background:"var(--bg2)", borderRadius:16,
+            border:"1px solid var(--border2)",
+            display:"flex", flexDirection:"column",
+            overflow:"hidden",
+            boxShadow:"0 24px 80px rgba(0,0,0,0.6)",
+          }} onClick={e => e.stopPropagation()}>
+            {/* Modal header */}
+            <div style={{
+              display:"flex", alignItems:"center", justifyContent:"space-between",
+              padding:"0.75rem 1.25rem",
+              borderBottom:"1px solid var(--border2)",
+              background:"var(--bg)",
+            }}>
+              <span style={{ fontFamily:"'Fira Code',monospace", fontSize:".75rem", color:"var(--text2)" }}>
+                📄 {cvName}
+              </span>
+              <div style={{ display:"flex", gap:"0.5rem" }}>
+                <button onClick={downloadCV} style={{
+                  display:"flex", alignItems:"center", gap:"0.35rem",
+                  padding:"0.4rem 0.9rem", borderRadius:999,
+                  background:"linear-gradient(135deg,var(--indigo),#7c3aed)",
+                  color:"white", border:"none", fontSize:".8rem",
+                  fontWeight:600, cursor:"pointer",
+                }}>
+                  <DownloadIcon /> Download
+                </button>
+                <button onClick={() => setCvPreview(false)} style={{
+                  padding:"0.4rem 0.75rem", borderRadius:999,
+                  background:"var(--surface2)", border:"1px solid var(--border2)",
+                  color:"var(--text2)", fontSize:".8rem", cursor:"pointer",
+                }}>✕ Close</button>
+              </div>
+            </div>
+            {/* PDF iframe */}
+            <iframe
+              src={cvUrl + "#toolbar=0"}
+              style={{ flex:1, border:"none", width:"100%", background:"#fff" }}
+              title="CV Preview"
+            />
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes pulse-dot {

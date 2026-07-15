@@ -23,7 +23,7 @@ function Typewriter({ words }: { words: string[] }) {
     }
   },[ci,del,wi,words,pause]);
   return (
-    <span style={{ display:"inline-block", minWidth:"14ch" }}>
+    <span className="hero-typewriter-word" style={{ display:"inline-block", minWidth:"14ch" }}>
       <span className="aurora-text">{text}<span className="blink" style={{color:"var(--cyan)"}}>|</span></span>
     </span>
   );
@@ -353,7 +353,7 @@ export default function Home() {
                 <span style={{ display:"block", fontSize:"clamp(1.6rem,3.2vw,2.6rem)", color:"var(--text2)", fontWeight:700, marginBottom:"0.3rem" }}>
                   Hi, I&apos;m Nalin —
                 </span>
-                <span style={{ display:"flex", alignItems:"baseline", gap:"0.35em", whiteSpace:"nowrap", fontSize:"clamp(2rem,4.2vw,3.5rem)" }}>
+                <span className="hero-typewriter-line" style={{ display:"flex", alignItems:"baseline", gap:"0.35em", flexWrap:"wrap", whiteSpace:"nowrap", fontSize:"clamp(2rem,4.2vw,3.5rem)" }}>
                   <span style={{ color:"var(--text3)", fontWeight:800 }}>I</span>
                   <Typewriter words={["build web apps.", "code full-stack.", "solve puzzles..", "love TypeScript."]} />
                 </span>
@@ -450,7 +450,7 @@ export default function Home() {
               <Reveal key={cat} delay={ci*120} direction="up">
                 <p style={{ fontFamily:"'Fira Code',monospace", fontSize:".7rem", textTransform:"uppercase", letterSpacing:".12em", color:"var(--indigo)", marginBottom:"1.5rem", fontWeight:500 }}>{cat}</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:"1.1rem" }}>
-                  {skills.filter(s=>s.category===cat).map(s=><SkillBar key={s.id} name={s.name} level={s.level}/>)}
+                  {skills.filter(s=>s.category===cat).sort((a,b)=>b.level-a.level).map(s=><SkillBar key={s.id} name={s.name} level={s.level}/>)}
                 </div>
               </Reveal>
             ))}
