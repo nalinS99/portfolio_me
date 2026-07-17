@@ -381,7 +381,11 @@ export default function About() {
                   </div>
                   <div>
                     <div style={{ fontWeight:600, fontSize:"1rem", marginBottom:".4rem" }}>{exp.role}</div>
-                    <p style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.75, marginBottom:".85rem" }}>{exp.description}</p>
+                    <div
+                      className="exp-desc"
+                      style={{ fontSize:".875rem", color:"var(--text2)", lineHeight:1.75, marginBottom:".85rem" }}
+                      dangerouslySetInnerHTML={{ __html: exp.description }}
+                    />
                     <div style={{ display:"flex", flexWrap:"wrap", gap:".4rem" }}>
                       {exp.tech.map(t=><span key={t} className="badge badge-gray">{t}</span>)}
                     </div>

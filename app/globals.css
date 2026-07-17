@@ -293,6 +293,12 @@ textarea.input { resize:vertical; min-height:120px; }
 [data-theme="light"] .code-window { background:#f8fafc; border-color:rgba(0,0,0,0.1); }
 .code-bar { background:var(--surface2); padding:.55rem 1rem; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:.4rem; }
 .code-dot { width:9px; height:9px; border-radius:50%; }
+.exp-desc ul { list-style:none; padding-left:0; margin:0; display:flex; flex-direction:column; gap:.5rem; }
+.exp-desc li { position:relative; padding-left:1.1rem; }
+.exp-desc li::before { content:"—"; position:absolute; left:0; color:var(--text3); }
+.exp-desc p { margin:0 0 .5rem 0; }
+.exp-desc a { color:var(--indigo); text-decoration:underline; }
+
 .code-body { padding:1.25rem 1.5rem; font-family:'Fira Code',monospace; font-size:.82rem; line-height:1.8; color:var(--text2); overflow-x:auto; }
 .code-body .kw  { color:#c084fc; }
 .code-body .str { color:#34d399; }
