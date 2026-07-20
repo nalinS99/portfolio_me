@@ -10,6 +10,7 @@ import Preloader from "@/components/Preloader";
 import ScrollProgress from "@/components/ScrollProgress";
 import BackToTop from "@/components/BackToTop";
 import { headers } from "next/headers";
+import ChatBot from "@/components/ChatBot";
 import { getPortfolioData } from "@/lib/serverData";
 import { DataProvider } from "@/components/DataProvider";
 
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {children}
             </main>
             {!isAdmin && <Footer />}
+            {!isAdmin && <ChatBot />}
           </DataProvider>
         </ThemeProvider>
       </body>
