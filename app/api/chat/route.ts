@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const runtime = "edge";
 
@@ -63,7 +64,39 @@ INSTRUCTIONS:
 - Do NOT answer questions unrelated to Nalin or web development
 - Respond in the same language the user writes in`;
 
+function createFallbackResponse(message: string) {
+  const prompt = message.toLowerCase();
+
+  if (prompt.includes("skill") || prompt.includes("stack") || prompt.includes("tech")) {
+    return "Nalin works with React.js, Next.js, JavaScript, TypeScript, Tailwind CSS, MUI, Bootstrap, Node.js, Express.js, MongoDB, MySQL, and SEO tools such as Lighthouse and PageSpeed Insights.";
+  }
+
+  if (prompt.includes("project")) {
+    return "Nalin has worked on Agro Pulse, a School Administration System, a Library Management System, and a Business Website project. You can explore more details on the portfolio site.";
+  }
+
+  if (prompt.includes("experience") || prompt.includes("work") || prompt.includes("atdigital")) {
+    return "Nalin worked as a Trainee Frontend Developer at ATDigital, where he handled client websites, SEO, Stripe checkout, and performance optimization for multiple projects.";
+  }
+
+  if (prompt.includes("available") || prompt.includes("hire") || prompt.includes("join") || prompt.includes("hiring")) {
+    return "Yes — Nalin is available for Associate Frontend or Full-Stack Developer roles. You can use the contact form or email rmnsbandara99@gmail.com to reach out.";
+  }
+
+  if (prompt.includes("contact") || prompt.includes("email") || prompt.includes("linkedin") || prompt.includes("github")) {
+    return "You can contact Nalin via email at rmnsbandara99@gmail.com, or through the contact form on the site. His GitHub is https://github.com/nalinS99 and LinkedIn is https://linkedin.com/in/nalin-s-bandara.";
+  }
+
+  if (prompt.includes("education") || prompt.includes("degree") || prompt.includes("university")) {
+    return "Nalin is currently pursuing a BSc Hons in Computing & Information Systems at Sabaragamuwa University of Sri Lanka with a GPA of 3.34.";
+  }
+
+  return "I'm not sure about that — you can reach Nalin directly at rmnsbandara99@gmail.com.";
+}
+
 export async function POST(req: NextRequest) {
+  let requestMessages: Array<{ role: string; content: string }> = [];
+
   // Rate limiting by IP
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
   const now = Date.now();
@@ -85,37 +118,83 @@ export async function POST(req: NextRequest) {
     ipRequests.set(ip, { count: 1, resetAt: now + LIMIT_WINDOW });
   }
 
-  const { messages } = await req.json();
-  const GEMINI_KEY = process.env.GEMINI_API_KEY!;
+  try {
+    const { messages } = await req.json();
+    requestMessages = Array.isArray(messages) ? messages : [];
+    const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
-  // Convert messages to Gemini format
-  const geminiMessages = messages.map((m: { role: string; content: string }) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: geminiMessages,
-        generationConfig: {
-          maxOutputTokens: 300,
-          temperature: 0.7,
-        },
-      }),
+    if (!GEMINI_KEY) {
+      return NextResponse.json(
+        { error: "API Key is missing in environment variables." },
+        { status: 500 }
+      );
     }
-  );
 
-  if (!res.ok) {
-    return NextResponse.json({ error: "AI unavailable" }, { status: 500 });
+    const genAI = new GoogleGenerativeAI(GEMINI_KEY);
+
+    const preferredModel = process.env.GEMINI_MODEL?.trim();
+    const modelCandidates = preferredModel
+      ? [preferredModel, "gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
+      : ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
+
+    const uniqueCandidates = [...new Set(modelCandidates.filter(Boolean))];
+    let lastError: unknown;
+
+    for (const modelName of uniqueCandidates) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: SYSTEM_PROMPT,
+          generationConfig: {
+            maxOutputTokens: 300,
+            temperature: 0.7,
+          },
+        });
+
+        // Format chat history and ensure system messages are filtered
+        let rawHistory = requestMessages
+          .slice(0, -1)
+          .filter((m: { role: string }) => m.role !== "system")
+          .map((m: { role: string; content: string }) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          }));
+
+        // Ensure history starts with a 'user' message to prevent SDK validation errors
+        while (rawHistory.length > 0 && rawHistory[0].role !== "user") {
+          rawHistory.shift();
+        }
+
+        const lastUserMessage = requestMessages[requestMessages.length - 1]?.content || "";
+
+        const chat = model.startChat({ history: rawHistory });
+        const result = await chat.sendMessage(lastUserMessage);
+        const responseText = result.response.text();
+
+        return NextResponse.json({ message: responseText });
+      } catch (error) {
+        lastError = error;
+        console.warn(`Gemini model attempt failed: ${modelName}`, error);
+      }
+    }
+
+    throw lastError || new Error("No Gemini model could serve the request.");
+  } catch (error: any) {
+    console.error("Gemini API Error Detail:", error);
+
+    const status = error?.status || error?.statusCode || 503;
+    const isRateLimit = status === 429 || /quota|rate limit|exceeded your current quota/i.test(error?.message || "");
+    const isNotFound = status === 404 || /not found|not supported for generateContent/i.test(error?.message || "");
+    const fallbackMessage = createFallbackResponse(
+      requestMessages[requestMessages.length - 1]?.content || ""
+    );
+
+    return NextResponse.json(
+      {
+        message: fallbackMessage,
+        serviceStatus: isRateLimit ? "rate-limited" : isNotFound ? "model-unavailable" : "unavailable",
+      },
+      { status: 200 }
+    );
   }
-
-  const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't generate a response.";
-
-  return NextResponse.json({ message: text });
 }
